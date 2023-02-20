@@ -1,18 +1,20 @@
 import * as React from 'react';
-import { View, Button, Text, Image } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TouchableHighlight, View, Button, Text, Image } from 'react-native';
 
-function Avatar() {
-  return (
-    <View style={styles.row}>
-      <Image
-        style={styles.logo}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
-      <Text allowFontScaling={false} style={{fontSize: 16}}>user name</Text>
-    </View>
-  );
+export default class Avatar extends React.Component {
+  render() {
+    return (
+      <View style={styles.row}>
+        <Image
+          style={styles.logo}
+          source={require('@expo/snack-static/react-native-logo.png')}
+        />
+        <Text allowFontScaling={false} style={{ fontSize: 16 }}>
+          user name
+        </Text>
+      </View>
+    );
+  }
 }
 
 const styles = {
@@ -27,5 +29,3 @@ const styles = {
     marginRight: 10,
   },
 };
-
-export default Avatar;

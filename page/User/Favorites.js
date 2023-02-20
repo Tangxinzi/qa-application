@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ViewSwiper from 'react-native-swiper';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import {
   Text,
   View,
@@ -14,6 +15,10 @@ import {
 class Favorites extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      listViewData: Array(20).fill('').map((_, i) => ({ key: `${i}`, text: `item #${i}` }))
+    }
   }
 
   render() {
