@@ -83,6 +83,11 @@ class Home extends React.Component {
                 onPress={() => this.props.navigation.navigate('Question')}>
                 <View style={styles.row}>
                   <View style={styles.headUserRow}>
+                    <Image
+                      resizeMode="cover"
+                      style={styles.rowAvatar}
+                      source={{ uri: 'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF' }}
+                    />
                     <Text style={styles.headUserName} allowFontScaling={false}>
                       title
                     </Text>
@@ -184,6 +189,12 @@ const styles = {
     fontWeight: '600',
     fontSize: 16,
   },
+  rowAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    marginRight: 10,
+  },
   rowContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -203,6 +214,7 @@ const styles = {
   headUserName: {
     fontWeight: '600',
     fontSize: 16,
+    flex: 1
   },
   headUserImage: {
     width: 40,

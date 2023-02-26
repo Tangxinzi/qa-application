@@ -41,12 +41,11 @@ class Login extends React.Component {
           <View style={styles.login}>
             <KeyboardAvoidingView keyboardVerticalOffset={10}>
               <View style={styles.textInputContainer}>
-                <Text allowFontScaling={false} style={styles.titleInputContainer}>Login</Text>
                 <Text allowFontScaling={false} style={{color: 'rgb(51, 51, 51)'}}>Email Address</Text>
                 <TextInput
                   allowFontScaling={false}
                   style={styles.textInput}
-                  placeholder="For eg. dave@moovaz.life"
+                  placeholder="For eg. name@example.com"
                   clearButtonMode="while-editing"
                   keyboardType="email-address"
                   defaultValue={this.state.email}
@@ -77,13 +76,13 @@ class Login extends React.Component {
                     }
                   }).catch(err => console.error('An error occurred', url))
                 }}>
-                  <Text allowFontScaling={false} style={{marginTop: 15, color: '#e89cae', fontWeight: '700'}}>Forgot password?</Text>
+                  <Text allowFontScaling={false} style={{marginTop: 15, color: 'grey', fontWeight: '700'}}>Forgot password?</Text>
                 </TouchableHighlight>
               </View>
               <View style={styles.textSubmitFoot}>
                 <TouchableHighlight
                   underlayColor='transparent'
-                  style={{backgroundColor: this.state.email != '' && this.state.password != '' ? '#e89cae' : 'grey', width: 145, height: 46, justifyContent: 'center', borderRadius: 23}}
+                  style={{backgroundColor: this.state.email != '' && this.state.password != '' ? 'skyblue' : 'grey', width: 145, height: 46, justifyContent: 'center', borderRadius: 23}}
                   onPress={() => {
                     if (this.state.email != '' && this.state.password != '') {
                       this.fetchLogin()
@@ -133,17 +132,10 @@ const styles = {
     color: '#111',
     textAlign: 'left'
   },
-  titleInputContainer: {
-    opacity: .8,
-    fontWeight: '700',
-    fontSize: 24,
-    color: '#000',
-    marginBottom: 30,
-  },
   textSubmitFoot: {
     marginTop: 30,
     marginBottom: 10,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   textInputContainer: {
     width: '100%',

@@ -29,6 +29,7 @@ import Recent from './User/Recent';
 import Login from './Login';
 import Search from './Search';
 import Question from './Question';
+import QuestionAsk from './QuestionAsk';
 import Teacher from './Teacher';
 import UserEdit from './User-Edit';
 import Chats from './Chats';
@@ -38,6 +39,7 @@ import EventCreate from './Event-Create';
 // Pages - User
 import Post from './User/Post';
 import Notes from './User/Notes';
+import Comment from './User/Comment';
 import NoteShare from './User/NoteShare';
 import Favorites from './User/Favorites';
 
@@ -88,13 +90,13 @@ function CourseStackScreen() {
               <TouchableHighlight
                 style={styles.button}
                 underlayColor="transparent"
-                onPress={() => this.props.navigation.navigate('Search')}>
+                onPress={() => navigation.navigate('Search')}>
                 <Ionicons name="search" size={26} />
               </TouchableHighlight>
               <TouchableHighlight
                 style={styles.button}
                 underlayColor="transparent"
-                onPress={() => this.props.navigation.navigate('Learn Coin')}>
+                onPress={() => navigation.navigate('Learn Coin')}>
                 <Ionicons name="ribbon-outline" size={25} />
               </TouchableHighlight>
             </View>
@@ -126,13 +128,13 @@ function DiscoverStackScreen() {
               <TouchableHighlight
                 style={styles.button}
                 underlayColor="transparent"
-                onPress={() => this.props.navigation.navigate('Search')}>
+                onPress={() => navigation.navigate('Search')}>
                 <Ionicons name="search" size={26} />
               </TouchableHighlight>
               <TouchableHighlight
                 style={styles.button}
                 underlayColor="transparent"
-                onPress={() => this.props.navigation.navigate('Learn Coin')}>
+                onPress={() => navigation.navigate('Learn Coin')}>
                 <Ionicons name="ribbon-outline" size={25} />
               </TouchableHighlight>
             </View>
@@ -204,7 +206,7 @@ function UserStackScreen() {
 function AppTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Courses"
+      initialRouteName="Home"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           if (route.name === 'Home') {
@@ -308,16 +310,28 @@ export default class Root extends React.Component {
               ),
             })}
           />
-          
-          <Stack.Screen name="Recent Views" component={Recent} />
-          <Stack.Screen name="Note Share" component={NoteShare} />
-          <Stack.Screen name="Learn Coin" component={LearnCoin} />
+          <Stack.Screen
+            name="Learn Coin"
+            component={LearnCoin}
+            options={({ navigation, route }) => ({
+              headerStyle: {
+                backgroundColor: '#f4511e',
+                borderBottomWidth: 0,
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {},
+            })}
+          />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Search" component={Search} />
+          <Stack.Screen name="Comment" component={Comment} />
+          <Stack.Screen name="Recent Views" component={Recent} />
+          <Stack.Screen name="Note Share" component={NoteShare} />
           <Stack.Screen name="New Event" component={EventCreate} />
           <Stack.Screen name="User Status Edit" component={UserEdit} />
           <Stack.Screen name="Teacher" component={Teacher} />
           <Stack.Screen name="Question" component={Question} />
+          <Stack.Screen name="Ask Question" component={QuestionAsk} />
         </Stack.Navigator>
       </NavigationContainer>
     );

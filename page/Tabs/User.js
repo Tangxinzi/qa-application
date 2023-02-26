@@ -24,32 +24,32 @@ class Me extends React.Component {
         {
           text: 'Post',
           name: 'Post',
-          icon: 'receipt-outline'
+          icon: 'receipt-outline',
         },
         {
           text: 'Comment',
           name: 'Comment',
-          icon: 'chatbubble-ellipses-outline'
+          icon: 'chatbubble-ellipses-outline',
         },
         {
           text: 'Like',
-          name: 'Like',
-          icon: 'heart-outline'
+          name: 'Post',
+          icon: 'heart-outline',
         },
         {
           text: 'Favorites',
           name: 'Favorites',
-          icon: 'folder-outline'
+          icon: 'folder-outline',
         },
         {
           text: 'Recent',
           name: 'Recent Views',
-          icon: 'time-outline'
+          icon: 'time-outline',
         },
         {
           text: 'Notes',
           name: 'Notes',
-          icon: 'calendar-outline'
+          icon: 'calendar-outline',
         },
         {
           text: 'Topup',
@@ -84,22 +84,32 @@ class Me extends React.Component {
           </View>
         </View>
         <View style={styles.userinfo}>
-          <Text allowFontScaling={false} style={[styles.userinfoRow, globalStyle.text]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.userinfoRow, globalStyle.text, { marginTop: 0 }]}>
             School: user info ...
           </Text>
-          <Text allowFontScaling={false} style={[styles.userinfoRow, globalStyle.text]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.userinfoRow, globalStyle.text]}>
             Year: user info ...
           </Text>
-          <Text allowFontScaling={false} style={[styles.userinfoRow, globalStyle.text]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.userinfoRow, globalStyle.text]}>
             Major: user info ...
           </Text>
-          <Text allowFontScaling={false} style={[styles.userinfoRow, globalStyle.text]}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.userinfoRow, globalStyle.text]}>
             Focus Area: user info ...
           </Text>
           <TouchableHighlight
             underlayColor="transparent"
             onPress={() => this.props.navigation.navigate('User Status Edit')}>
-            <Text allowFontScaling={false} style={[styles.userEdit, globalStyle.text]}>
+            <Text
+              allowFontScaling={false}
+              style={[styles.userEdit, globalStyle.text]}>
               edit
             </Text>
           </TouchableHighlight>
@@ -109,11 +119,15 @@ class Me extends React.Component {
             return (
               <TouchableHighlight
                 style={styles.data}
+                activeOpacity={0.85}
                 underlayColor="transparent"
                 onPress={() => this.props.navigation.navigate(item.name)}>
                 <>
-                  <Ionicons name={item.icon} size={34} />
-                  <Text allowFontScaling={false}>{item.text}</Text>
+                  <Ionicons name={item.icon} size={20} />
+                  <Text allowFontScaling={false} style={styles.iconText}>
+                    {item.text}
+                  </Text>
+                  <Ionicons name="chevron-forward-outline" size={20} />
                 </>
               </TouchableHighlight>
             );
@@ -162,9 +176,18 @@ const styles = {
     height: 60,
     borderRadius: 30,
   },
-  username: { fontSize: 18, fontWeight: '600', marginBottom: 5 },
+  username: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  userinfo: {
+    backgroundColor: '#e6e6e6',
+    padding: 10,
+    borderRadius: 6,
+  },
   userinfoRow: {
-    marginTop: 5,
+    marginTop: 8,
   },
   userEdit: {
     position: 'absolute',
@@ -173,25 +196,26 @@ const styles = {
   },
   userData: {
     marginTop: 20,
-    marginBottom: 20,
-    paddingBottom: 20,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'nowrap',
     justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e3e3e3',
   },
   data: {
-    width: width / 6.2,
-    margin: 10,
-    marginTop: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginBottom: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    // backgroundColor: '#CCC',
   },
   dataNum: {
     fontWeight: '600',
     fontSize: 20,
     marginBottom: 5,
+  },
+  iconText: {
+    flex: 1,
+    marginLeft: 10,
   },
 
   // tabs

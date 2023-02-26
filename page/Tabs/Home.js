@@ -16,7 +16,7 @@ import {
 
 let { width, height } = Dimensions.get('window');
 
-class Home extends React.Component {
+export default class Home extends React.Component<Props, State> {
   constructor(props) {
     super(props);
 
@@ -32,10 +32,8 @@ class Home extends React.Component {
       quality: 1,
     });
 
-    console.log(result);
-
-    if (!result.canceled) {
-      console.log(result.assets[0].uri);
+    if (result) {
+      this.props.navigation.navigate('Ask Question', { assets: result });
     }
   }
 
@@ -193,6 +191,9 @@ const styles = {
   },
 
   // question
+  questions: {
+    paddingBottom: 30
+  },
   question: {
     marginTop: 15,
     padding: 15,

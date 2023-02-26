@@ -24,8 +24,7 @@ class Favorites extends React.Component {
           <TouchableHighlight style={styles.button}>
             <>
               <Text allowFontScaling={false}>Time</Text>
-              <Text allowFontScaling={false} style={{marginLeft: 10, marginRight: 10, fontWeight: '500'}}>Comment</Text>
-              <Text allowFontScaling={false}>Like</Text>
+              <Text allowFontScaling={false} style={{marginLeft: 20, fontWeight: '500'}}>Like</Text>
             </>
           </TouchableHighlight>
         </View>

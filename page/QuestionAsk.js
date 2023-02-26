@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ViewSwiper from 'react-native-swiper';
 import globalStyle from '../assets/global-style';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import ActionSheet from 'react-native-actionsheet';
 import {
   Text,
   View,
@@ -13,63 +14,65 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-class EventCreate extends React.Component {
+class QuestionAsk extends React.Component {
   constructor(props) {
     super(props);
-
+    
     this.state = {
-      
+      params: this.props.route.params,
+      lists: [],
     };
   }
 
   render() {
     return (
-      <>
+      <ScrollView style={styles.container}>
+        <View style={styles.swiperContainer}>
+          <Image
+            resizeMode="cover"
+            style={styles.swiperImage}
+            source={{
+              uri: this.state.params.assets.uri || 'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+            }}
+          />
+        </View>
         <View style={styles.container}>
           <View style={globalStyle.form}>
+            <TouchableHighlight underlayColor="transparent">
+              <View style={globalStyle.formRow}>
+                <Text style={globalStyle.formText}>Country</Text>
+                <TextInput
+                  style={globalStyle.formInput}
+                  placeholder="Please input ..."
+                />
+              </View>
+            </TouchableHighlight>
             <View style={globalStyle.formRow}>
-              <Text allowFontScaling={false} style={globalStyle.formText}>Title</Text>
+              <Text style={globalStyle.formText}>School</Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text allowFontScaling={false} style={globalStyle.formText}>Content</Text>
+              <Text style={globalStyle.formText}>Module Name</Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text allowFontScaling={false} style={globalStyle.formText}>Start Time</Text>
+              <Text style={globalStyle.formText}>Module Code</Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
               />
-            </View>
-            <View style={globalStyle.formRow}>
-              <Text allowFontScaling={false} style={globalStyle.formText}>Estimated Duration</Text>
-              <TextInput
-                style={globalStyle.formInput}
-                placeholder="Please input ..."
-              />
-            </View>
-            <View style={globalStyle.formRow}>
-              <Text allowFontScaling={false} style={globalStyle.formText}>LearnCoin</Text>
-              <TextInput
-                style={globalStyle.formInput}
-                placeholder="Please input ..."
-              />
-            </View>
-            <View style={globalStyle.formRow}>
-              <Text allowFontScaling={false} style={globalStyle.formText}>Estimated LearnCoin</Text>
-              <Text allowFontScaling={false} style={globalStyle.formText}>自动计算</Text>
             </View>
           </View>
+
           <View style={styles.buttons}>
             <TouchableHighlight
-              style={{...styles.button, backgroundColor: '#3eb96e'}}
+              style={{ ...styles.button, backgroundColor: '#3eb96e' }}
               underlayColor="transparent">
               <Text allowFontScaling={false} style={styles.buttonText}>
                 Confirm
@@ -84,7 +87,7 @@ class EventCreate extends React.Component {
             </TouchableHighlight>
           </View>
         </View>
-      </>
+      </ScrollView>
     );
   }
 }
@@ -92,12 +95,35 @@ class EventCreate extends React.Component {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#FFF',
-    justifyContent: 'space-between'
   },
+
+  // swiper
+  swiperContainer: {
+    // height: 160,
+    width: Dimensions.get('window').width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e3e3e3',
+  },
+  swiperTouch: {
+    borderRadius: 5,
+  },
+  swiperImage: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').width,
+  },
+  swiperTitle: {
+    marginTop: 10,
+    width: '80%',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  // bottons
   buttons: {
     alignItems: 'center',
-    marginBottom: 100,
+    position: 'relative',
+    bottom: -100,
   },
   button: {
     margin: 10,
@@ -114,4 +140,4 @@ const styles = {
   },
 };
 
-module.exports = EventCreate;
+module.exports = QuestionAsk;

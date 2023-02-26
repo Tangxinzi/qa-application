@@ -77,7 +77,7 @@ const styles = {
   },
   toolText: {
     marginRight: 30,
-    color: 'blue',
+    color: '#616470',
   },
   button: {
     alignItems: 'center',

@@ -13,6 +13,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
+let { width, height } = Dimensions.get('window');
+
 class Question extends React.Component {
   constructor(props) {
     super(props);
@@ -28,9 +30,17 @@ class Question extends React.Component {
             </Text>
             <View style={styles.headUser}>
               <View style={styles.headUserRow}>
-                <Image resizeMode='cover' style={styles.headUserImage} source={{uri: 'https://t7.baidu.com/it/u=2168645659,3174029352&fm=193&f=GIF'}} />
+                <Image
+                  resizeMode="cover"
+                  style={styles.headUserImage}
+                  source={{
+                    uri: 'https://t7.baidu.com/it/u=2168645659,3174029352&fm=193&f=GIF',
+                  }}
+                />
                 <View>
-                  <Text style={styles.headUserName} allowFontScaling={false}>User name</Text>
+                  <Text style={styles.headUserName} allowFontScaling={false}>
+                    User name
+                  </Text>
                   <Text allowFontScaling={false}>read · date · from</Text>
                 </View>
               </View>
@@ -41,19 +51,49 @@ class Question extends React.Component {
             </View>
           </View>
           <View style={styles.content}>
-            <Text style={{lineHeight: 300, textAlign: 'center'}}>内容区域</Text>
+            <Text style={{ lineHeight: 300, textAlign: 'center' }}>
+              内容区域
+            </Text>
           </View>
         </View>
         <View style={styles.comments}>
-          <Text style={{lineHeight: 100, textAlign: 'center'}}>评论区域</Text>
+          <Text allowFontScaling={false}>全部评论</Text>
+          {[0, 1, 2, 3, 4, 5].map((item, key) => {
+            return (
+              <View
+                style={{
+                  ...styles.headUserRow,
+                  alignItems: 'flex-start',
+                  marginTop: 15,
+                  marginBottom: 0
+                }}>
+                <Image
+                  resizeMode="cover"
+                  style={{ ...styles.headUserImage, width: 30, height: 30 }}
+                  source={{
+                    uri: 'https://t7.baidu.com/it/u=2168645659,3174029352&fm=193&f=GIF',
+                  }}
+                />
+                <View>
+                  <Text style={{ fontWeight: '600' }} allowFontScaling={false}>
+                    User name
+                  </Text>
+                  <Text allowFontScaling={false}>date</Text>
+                  <Text allowFontScaling={false} style={{ marginTop: 5 }}>
+                    评论内容
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
         </View>
         <View style={styles.pageBottom}>
-          <Text>点赞</Text>
-          <Text>收藏</Text>
-          <Text>分享</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.input} placeholder="Please input ..." />
+            <TextInput style={styles.input} placeholder="Please input ..." placeholderTextColor="#ccc" />
           </View>
+          <Ionicons name="heart-outline" size={20} color="#666" />
+          <Ionicons name="star-outline" size={20} color="#666" />
+          <Ionicons name="share-outline" size={20} color="#666" />
         </View>
       </ScrollView>
     );
@@ -66,14 +106,13 @@ const styles = {
     backgroundColor: '#FFF',
   },
   // head
-  head: {
-  },
+  head: {},
   headTitleText: {
     fontSize: 16,
     fontWeight: '600',
   },
   headUser: {
-    marginTop: 10
+    marginTop: 10,
   },
   headUserRow: {
     marginBottom: 15,
@@ -83,24 +122,24 @@ const styles = {
   headUserName: {
     fontWeight: '600',
     fontSize: 16,
-    marginBottom: 5
+    marginBottom: 5,
   },
   headUserImage: {
     width: 40,
     height: 40,
     borderRadius: 18,
-    marginRight: 10
+    marginRight: 10,
   },
 
   // content
   content: {
     minHeight: 300,
-    
   },
 
   // comments
   comments: {
     marginTop: 10,
+    padding: 15,
     backgroundColor: '#FFF',
   },
 
@@ -111,18 +150,17 @@ const styles = {
     borderTopWidth: 1,
     borderTopStyle: 'solid',
     width: '100%',
-    position: 'fixed',
-    bottom: 0,
+    // position: 'absolute',
+    // bottom: 0,
     padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  inputContainer: {
-    
-  },
+  inputContainer: {},
   input: {
-
-  }
+    flex: 1,
+    width: width * 0.5
+  },
 };
 
 module.exports = Question;
