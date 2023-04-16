@@ -1,16 +1,23 @@
 import * as React from 'react';
+import Api from './Api';
 import { TouchableHighlight, View, Button, Text, Image } from 'react-native';
 
 export default class Avatar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <View style={styles.row}>
         <Image
           style={styles.logo}
-          source={require('@expo/snack-static/react-native-logo.png')}
+          source={{
+            uri: this.props.avatar || Api.avatar,
+          }}
         />
         <Text allowFontScaling={false} style={{ fontSize: 16 }}>
-          user name
+          {this.props.user_name || ''}
         </Text>
       </View>
     );

@@ -1,8 +1,6 @@
 import * as React from 'react';
-import Root from './page/Root';
+import Root from './Pages/Root';
 
 export default function App() {
-  return (
-    <Root />
-  );
+  return <Root />;
 }
