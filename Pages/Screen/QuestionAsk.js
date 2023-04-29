@@ -4,11 +4,14 @@ import Api from '../../components/Api';
 import globalStyle from '../../assets/global-style';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import ActionSheet from 'react-native-actionsheet';
+import { faker } from '@faker-js/faker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Text,
   View,
   Image,
+  Modal,
+  Platform,
   TextInput,
   ScrollView,
   Dimensions,
@@ -22,8 +25,10 @@ class QuestionAsk extends React.Component {
     super(props);
 
     this.state = {
-      params: this.props.route.params,
+      file: this.props.route.params.assets,
+      // file: '',
       lists: [],
+      modalVisible: false,
       userinfo: {
         other: {
           year: '',
@@ -32,8 +37,7 @@ class QuestionAsk extends React.Component {
       },
     };
 
-    this.upload();
-    this.getUserinfo();
+    // this.getUserinfo();
   }
 
   componentDidMount() {
@@ -66,30 +70,43 @@ class QuestionAsk extends React.Component {
       });
   }
 
-  upload() {
-    let formdata = new FormData();
-    formdata.append('file', {
-      uri: this.state.params.assets.uri || '',
+  async upload() {
+    const data = new FormData();
+    data.append('file', {
+      name: 'image',
+      // type: 'image/png',
+      uri:
+        Platform.OS === 'android'
+          ? this.state.file
+          : this.state.file.uri.replace('file://', ''),
     });
 
-    console.log(Api.uri + '/api/v2/file/upload');
-    fetch(Api.uri + '/api/v2/file/upload', {
+    await fetch(Api.uri + '/api/v2/file/upload', {
       method: 'post',
       headers: {
         'Content-Type': 'multipart/form-data',
+        Type: 'application/octet-stream',
+        Accept: 'application/json',
       },
-      body: formdata,
+      body: data,
     })
+      .then((response) => response.json())
       .then((response) => {
         console.log(response);
+        if (response.errno == 0) {
+          this.setState({
+            upload: response.data,
+          });
+        }
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  createQuestion() {
-    fetch(Api.uri + '/api/v2/question/create', {
+  async createQuestion() {
+    await this.upload();
+    await fetch(Api.uri + '/api/v2/question/create', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -99,11 +116,12 @@ class QuestionAsk extends React.Component {
         user_id: this.state.userinfo._id,
         question_name: this.state.moduleName || '',
         question_code: this.state.moduleCode || '',
+        file: this.state.upload.url || '',
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        alert(JSON.stringify(data));
         this.props.navigation.navigate('Discover');
       })
       .catch((error) => {
@@ -114,14 +132,82 @@ class QuestionAsk extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
+        <Modal
+          animationType="slide"
+          visible={this.state.modalVisible}
+          onRequestClose={() => this.setState({ modalVisible: false })}>
+          <View style={{ ...styles.moda, marginTop: 50, padding: 20 }}>
+            <Text
+              style={{ fontSize: 20, fontWeight: '600', marginBottom: 10 }}
+              allowFontScaling={false}>
+              Find Question
+            </Text>
+            <Image
+              resizeMode="cover"
+              style={{ marginTop: 10, width: '100%', height: 130 }}
+              source={{
+                uri: this.state.file.uri || '',
+              }}
+            />
+            <Text
+              // numberOfLines={2}
+              style={styles.questionHeadLabel}
+              allowFontScaling={false}>
+              No relevant answers found
+            </Text>
+            <Image
+              resizeMode="cover"
+              style={{
+                display: 'none',
+                marginTop: 10,
+                marginBottom: 10,
+                width: '100%',
+                height: 130,
+              }}
+              source={{
+                uri: faker.image.image(),
+              }}
+            />
+          </View>
+          <View
+            style={{
+              ...styles.buttons,
+              // flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <TouchableHighlight
+              style={{ ...styles.button, backgroundColor: '#3eb96e' }}
+              onPress={() => this.createQuestion()}
+              underlayColor="transparent">
+              <Text allowFontScaling={false} style={styles.buttonText}>
+                AI Helper
+              </Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={styles.button}
+              underlayColor="transparent"
+              onPress={() => this.setState({ modalVisible: false })}>
+              <Text allowFontScaling={false} style={styles.buttonText}>
+                Academic Star
+              </Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={styles.button}
+              underlayColor="transparent"
+              onPress={() => this.props.navigation.goBack()}>
+              <Text allowFontScaling={false} style={styles.buttonText}>
+                Cancel
+              </Text>
+            </TouchableHighlight>
+          </View>
+        </Modal>
         <View style={styles.swiperContainer}>
           <Image
             resizeMode="cover"
             style={styles.swiperImage}
             source={{
-              uri:
-                this.state.params.assets.uri ||
-                'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+              uri: this.state.file.uri || '',
             }}
           />
         </View>
@@ -129,7 +215,9 @@ class QuestionAsk extends React.Component {
           <View style={globalStyle.form}>
             <TouchableHighlight underlayColor="transparent">
               <View style={globalStyle.formRow}>
-                <Text style={globalStyle.formText}>Country</Text>
+                <Text style={globalStyle.formText} allowFontScaling={false}>
+                  Country
+                </Text>
                 <TextInput
                   style={globalStyle.formInput}
                   placeholder="Please input ..."
@@ -148,7 +236,9 @@ class QuestionAsk extends React.Component {
               </View>
             </TouchableHighlight>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>School</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                School
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -166,7 +256,9 @@ class QuestionAsk extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Module Name</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Module Name
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -175,7 +267,9 @@ class QuestionAsk extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Module Code</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Module Code
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -184,21 +278,27 @@ class QuestionAsk extends React.Component {
               />
             </View>
           </View>
-          <View style={styles.buttons}>
+          <View 
+            style={{
+              ...styles.buttons,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
             <TouchableHighlight
-              style={{ ...styles.button, backgroundColor: '#3eb96e' }}
-              onPress={() => this.createQuestion()}
+              style={{ ...styles.button, backgroundColor: '#3eb96e', width: 130 }}
+              onPress={() => this.setState({ modalVisible: true })}
               underlayColor="transparent">
               <Text allowFontScaling={false} style={styles.buttonText}>
-                Confirm
+                Find Question
               </Text>
             </TouchableHighlight>
             <TouchableHighlight
-              style={styles.button}
-              underlayColor="transparent"
-              onPress={() => this.props.navigation.goBack()}>
+              style={{ ...styles.button, backgroundColor: '#3eb96e', width: 130 }}
+              onPress={() => this.createQuestion()}
+              underlayColor="transparent">
               <Text allowFontScaling={false} style={styles.buttonText}>
-                Cancel
+                Create Question
               </Text>
             </TouchableHighlight>
           </View>

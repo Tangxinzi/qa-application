@@ -8,6 +8,7 @@ import ActionSheet from 'react-native-actionsheet';
 import globalStyle from '../../assets/global-style';
 import CameraView from '../../components/CameraView';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { faker } from '@faker-js/faker';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -29,37 +30,45 @@ export default class Home extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      userinfo: {},
       date: {
-        userinfo: {},
         now: moment().weekday(1).format('YYYY'),
+        day: moment().format('DD'),
         month: moment().format('MMMM'),
         days: [
           {
-            active: true,
+            active: false,
+            text: moment().weekday(1).format('YYYY-MM-DD'),
             time: moment().weekday(1).format('DD'),
           },
           {
             active: false,
+            text: moment().weekday(2).format('YYYY-MM-DD'),
             time: moment().weekday(2).format('DD'),
           },
           {
             active: false,
+            text: moment().weekday(3).format('YYYY-MM-DD'),
             time: moment().weekday(3).format('DD'),
           },
           {
             active: false,
+            text: moment().weekday(4).format('YYYY-MM-DD'),
             time: moment().weekday(4).format('DD'),
           },
           {
             active: false,
+            text: moment().weekday(5).format('YYYY-MM-DD'),
             time: moment().weekday(5).format('DD'),
           },
           {
             active: false,
+            text: moment().weekday(6).format('YYYY-MM-DD'),
             time: moment().weekday(6).format('DD'),
           },
           {
             active: false,
+            text: moment().weekday(7).format('YYYY-MM-DD'),
             time: moment().weekday(7).format('DD'),
           },
         ],
@@ -73,22 +82,33 @@ export default class Home extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.listener = DeviceEventEmitter.addListener('Change', () => {
+    DeviceEventEmitter.addListener('Change', () => {
+      this.getUserinfo();
+    });
+
+    DeviceEventEmitter.addListener('focus', () => {
       this.getUserinfo();
     });
   }
 
   async getUserinfo() {
     var userinfo = await AsyncStorage.getItem('userinfo');
-    userinfo = JSON.parse(userinfo);
+    userinfo = userinfo ? JSON.parse(userinfo) : {};
     this.setState({ userinfo });
+    this.fetchDays();
 
     this.props.navigation.setOptions({
+      headerStyle: {
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        backgroundColor: 'transparent',
+      },
       headerLeft: (props) => (
         <TouchableHighlight
           underlayColor="transparent"
           onPress={() =>
-            this.props.navigation.navigate(userinfo ? 'Userinfo' : 'Login')
+            this.props.navigation.navigate(userinfo._id ? 'Userinfo' : 'Login')
           }>
           <Avatar {...userinfo} />
         </TouchableHighlight>
@@ -97,11 +117,26 @@ export default class Home extends React.Component<Props, State> {
   }
 
   fetchData() {
-    fetch(Api.uri + '/api/question?type=json')
+    fetch(Api.uri + '/api/v2/question/lists')
       .then((response) => response.json())
       .then((questions) => {
         this.setState({
           questions,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  fetchDays() {
+    fetch(Api.uri + '/api/v2/user/sign/days?user_id=' + this.state.userinfo._id)
+      .then((response) => response.json())
+      .then((days) => {
+        const date = this.state.date;
+        date.days = days;
+        this.setState({
+          date,
         });
       })
       .catch((error) => {
@@ -127,6 +162,26 @@ export default class Home extends React.Component<Props, State> {
     this.setState({
       status: value,
     });
+  }
+
+  sign() {
+    fetch(Api.uri + '/api/v2/user/sign', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: this.state.userinfo._id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((sign) => {
+        this.fetchDays();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   render() {
@@ -176,26 +231,32 @@ export default class Home extends React.Component<Props, State> {
           options={['Pick Image', 'Camera', 'Cancel']}
           cancelButtonIndex={2}
           onPress={(index) => {
-            console.log(this.props.navigation);
             index == 0 ? this.pickImage() : '';
             index == 1 ? this.setState({ status: true }) : '';
           }}
         />
         <View style={styles.calendar}>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-            allowFontScaling={false}>
-            <Text
-              allowFontScaling={false}
-              style={{ ...styles.blockText, color: '#000' }}>
-              {this.state.date.month}
-            </Text>
-            <Text
-              allowFontScaling={false}
-              style={{ ...styles.blockText, color: '#2276e9' }}>
-              {this.state.date.now}
-            </Text>
-          </View>
+          <TouchableHighlight
+            underlayColor="transparent"
+            onPress={() => this.props.navigation.navigate('Days')}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+              allowFontScaling={false}>
+              <Text
+                allowFontScaling={false}
+                style={{ ...styles.blockText, color: '#000' }}>
+                {this.state.date.month} {this.state.date.now}
+              </Text>
+              <Text
+                allowFontScaling={false}
+                style={{ ...styles.blockText, color: '#2276e9' }}></Text>
+              <Ionicons name="chevron-forward-outline" color="grey" size={20} />
+            </View>
+          </TouchableHighlight>
           <View style={styles.days}>
             <Text allowFontScaling={false}>Mon</Text>
             <Text allowFontScaling={false}>Tue</Text>
@@ -206,92 +267,51 @@ export default class Home extends React.Component<Props, State> {
             <Text allowFontScaling={false}>Sun</Text>
           </View>
           <View style={styles.days}>
-            {this.state.date.days.map((item, key) => {
-              return (
-                <View style={styles.day}>
-                  <Text
-                    style={{
-                      ...styles.dayText,
-                      backgroundColor: item.active ? '#2276e9' : '#e3e3e3',
-                      color: item.active ? '#FFF' : '#000',
-                    }}
-                    allowFontScaling={false}>
-                    {item.time}
-                  </Text>
-                  <View
-                    style={{
-                      display: 'none',
-                      position: 'absolute',
-                      bottom: 2,
-                      left: 13,
-                      backgroundColor: item.active ? '#FFF' : 'transparent',
-                      borderRadius: 3,
-                      height: 3,
-                      width: 3,
-                    }}></View>
-                </View>
-              );
-            })}
+            {this.state.date &&
+              this.state.date.days.map((item, key) => {
+                return (
+                  <TouchableHighlight
+                    underlayColor="transparent"
+                    onPress={() => this.sign()}>
+                    <View style={styles.day}>
+                      <Text
+                        style={{
+                          ...styles.dayText,
+                          backgroundColor: item.active ? '#2276e9' : '#e3e3e3',
+                          color: item.active ? '#FFF' : '#000',
+                          borderColor:
+                            item.time == this.state.date.day
+                              ? '#2276e9'
+                              : '#e3e3e3',
+                        }}
+                        allowFontScaling={false}>
+                        {item.time}
+                      </Text>
+                      <View
+                        style={{
+                          display: 'none',
+                          position: 'absolute',
+                          bottom: 2,
+                          left: 13,
+                          backgroundColor: item.active ? '#FFF' : 'transparent',
+                          borderRadius: 3,
+                          height: 3,
+                          width: 3,
+                        }}></View>
+                    </View>
+                  </TouchableHighlight>
+                );
+              })}
           </View>
         </View>
         <View style={styles.questions}>
-          <TouchableHighlight
-            underlayColor="transparent"
-            onPress={() =>
-              this.props.navigation.navigate('Question Content', {
-                id: '121',
-              })
-            }>
-            <View style={styles.question}>
-              <View style={styles.questionHead}>
-                <Text
-                  style={{
-                    ...styles.questionLabel,
-                    color: '#FFF',
-                    backgroundColor: 'red',
-                  }}
-                  allowFontScaling={false}>
-                  Easy
-                </Text>
-                <Text
-                  numberOfLines={1}
-                  style={styles.questionHeadTitle}
-                  allowFontScaling={false}>
-                  0. item 0
-                </Text>
-                <Ionicons name={'help-circle-outline'} size={20} />
-              </View>
-              <View style={styles.questionCon}>
-                <Text
-                  numberOfLines={2}
-                  style={styles.questionHeadLabel}
-                  allowFontScaling={false}>
-                  tip...
-                </Text>
-              </View>
-              <View style={styles.questionFoot}>
-                <Text style={styles.questionLabel} allowFontScaling={false}>
-                  ST1131
-                </Text>
-                <Text style={styles.questionLabel} allowFontScaling={false}>
-                  statistics
-                </Text>
-                <View style={{ flex: 1 }}></View>
-                <Text
-                  style={{ ...styles.questionLabel, marginRight: 0 }}
-                  allowFontScaling={false}>
-                  Solve
-                </Text>
-              </View>
-            </View>
-          </TouchableHighlight>
           {this.state.questions.map((item, key) => {
             return (
               <TouchableHighlight
                 underlayColor="transparent"
                 onPress={() =>
                   this.props.navigation.navigate('Question Content', {
-                    id: item.question_id,
+                    id: item._id,
                   })
                 }>
                 <View style={styles.question}>
@@ -317,7 +337,7 @@ export default class Home extends React.Component<Props, State> {
                       numberOfLines={1}
                       style={styles.questionHeadTitle}
                       allowFontScaling={false}>
-                      {key + 1}. {item.question_name} {item.question_title}
+                      {item.question_name} {item.question_title}
                     </Text>
                     <Ionicons
                       name={
@@ -334,21 +354,24 @@ export default class Home extends React.Component<Props, State> {
                       numberOfLines={2}
                       style={styles.questionHeadLabel}
                       allowFontScaling={false}>
-                      {item.question_tips}
+                      {item.question_detail || faker.lorem.text()}
                     </Text>
                   </View>
                   <View style={styles.questionFoot}>
-                    <Text style={styles.questionLabel} allowFontScaling={false}>
-                      ST1131
-                    </Text>
-                    <Text style={styles.questionLabel} allowFontScaling={false}>
-                      statistics
-                    </Text>
+                    {['ST1131', 'Statistic'].map((item, key) => {
+                        return (
+                          <Text
+                            style={styles.questionLabel}
+                            allowFontScaling={false}>
+                            {item}
+                          </Text>
+                        );
+                      })}
                     <View style={{ flex: 1 }}></View>
                     <Text
                       style={{ ...styles.questionLabel, marginRight: 0 }}
                       allowFontScaling={false}>
-                      Solve
+                      Unresolved
                     </Text>
                   </View>
                 </View>
@@ -410,6 +433,7 @@ const styles = {
     height: 28,
     lineHeight: 28,
     borderRadius: 14,
+    borderWidth: 1,
     overflow: 'hidden',
     textAlign: 'center',
     backgroundColor: '#e3e3e3',

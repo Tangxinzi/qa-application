@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Api from '../../components/Api';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Text,
@@ -29,6 +30,7 @@ class Register extends React.Component {
       email: '',
       username: '',
       password: '',
+      user_identity: false
     };
   }
 
@@ -47,6 +49,7 @@ class Register extends React.Component {
         user_email: this.state.email,
         user_name: this.state.username,
         user_password: this.state.password,
+        user_identity: this.state.user_identity ? 'Tutor' : '',
       }),
     })
       .then((response) => response.json())
@@ -118,6 +121,27 @@ class Register extends React.Component {
                   onChangeText={(password) => this.setState({ password })}
                 />
               </View>
+              <TouchableHighlight
+                underlayColor="transparent"
+                onPress={() =>
+                  this.setState({
+                    user_identity: !this.state.user_identity,
+                  })
+                }>
+                <Text>
+                  <Ionicons
+                    name={
+                      this.state.user_identity
+                        ? 'checkmark-circle-outline'
+                        : 'ellipse-outline'
+                    }
+                    color="#666"
+                    size={20}
+                    style={{ position: 'relative', top: 2, marginRight: 5 }}
+                  />
+                  <Text style={{ color: '#666' }} allowFontScaling={false}>tutor identity</Text>
+                </Text>
+              </TouchableHighlight>
               <View style={styles.textSubmitFoot}>
                 <TouchableHighlight
                   underlayColor="transparent"

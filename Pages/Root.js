@@ -29,14 +29,13 @@ import Courses from './Tabs/Courses';
 // Pages
 import Login from './Screen/Login';
 import Register from './Screen/Register';
-import UserEdit from './Screen/User-Edit';
-import Search from './Search';
-import Question from './Question';
+import Question from './Screen/Question';
+import Chats from './Screen/Chats';
 import QuestionAsk from './Screen/QuestionAsk';
-import Teacher from './Teacher';
-import Chats from './Chats';
+import EventCreate from './Screen/Event-Create';
+import Teacher from './Screen/Teacher';
+import Search from './Search';
 import Upcoin from './Upcoin';
-import EventCreate from './Event-Create';
 import DiscoverContent from './DiscoverContent';
 
 // Pages - User
@@ -47,8 +46,9 @@ import Comment from './Screen/User/Comment';
 import NoteShare from './Screen/User/NoteShare';
 import Favorites from './Screen/User/Favorites';
 import Userinfo from './Screen/User/Userinfo';
-
-// Components
+import UserEdit from './Screen/User/User-Edit';
+import Days from './Screen/User/Days';
+import EventList from './Screen/User/EventList';
 
 class TestScreen extends React.Component {
   render() {
@@ -82,7 +82,7 @@ function CourseStackScreen() {
         component={Courses}
         options={({ navigation, route }) => ({
           title: null,
-          headerStyle,
+          // headerStyle,
           headerRight: (props) => (
             <View style={styles.row}>
               <TouchableHighlight
@@ -95,7 +95,11 @@ function CourseStackScreen() {
                 style={styles.button}
                 underlayColor="transparent"
                 onPress={() => navigation.navigate('Upcoin')}>
-                <Ionicons name="server-outline" size={25} />
+                <Image
+                  resizeMode="cover"
+                  style={{ width: 26, height: 26, borderRadius: 26 }}
+                  source={require('../assets/coin.jpg')}
+                />
               </TouchableHighlight>
             </View>
           ),
@@ -126,7 +130,11 @@ function DiscoverStackScreen() {
                 style={styles.button}
                 underlayColor="transparent"
                 onPress={() => navigation.navigate('Upcoin')}>
-                <Ionicons name="server-outline" size={25} />
+                <Image
+                  resizeMode="cover"
+                  style={{ width: 26, height: 26, borderRadius: 26 }}
+                  source={require('../assets/coin.jpg')}
+                />
               </TouchableHighlight>
             </View>
           ),
@@ -146,7 +154,7 @@ class HomeStackScreen extends React.Component {
           component={Home}
           options={({ navigation, route }) => ({
             title: null,
-            headerStyle,
+            // headerStyle,
             headerRight: (props) => (
               <View style={styles.row}>
                 <TouchableHighlight
@@ -159,7 +167,11 @@ class HomeStackScreen extends React.Component {
                   style={styles.button}
                   underlayColor="transparent"
                   onPress={() => this.props.navigation.navigate('Upcoin')}>
-                  <Ionicons name="server-outline" size={25} />
+                  <Image
+                    resizeMode="cover"
+                    style={{ width: 26, height: 26, borderRadius: 26 }}
+                    source={require('../assets/coin.jpg')}
+                  />
                 </TouchableHighlight>
               </View>
             ),
@@ -288,7 +300,20 @@ function AppTabs() {
                   shadowOpacity: 0.3,
                   shadowRadius: 3,
                 }}>
-                <Ionicons name="aperture" color={color} size={30} />
+                <Ionicons
+                  name="aperture"
+                  color={color}
+                  size={30}
+                  style={{ zIndex: 1 }}
+                />
+                <View
+                  style={{
+                    backgroundColor: '#FFF',
+                    width: 60,
+                    height: 36,
+                    top: 14,
+                    position: 'absolute',
+                  }}></View>
               </View>
             );
           }
@@ -385,19 +410,6 @@ export default class Root extends React.Component {
             })}
           />
           <Stack.Screen
-            name="Favorites"
-            component={Favorites}
-            options={({ navigation, route }) => ({
-              headerRight: () => (
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  onPress={() => navigation.navigate('Search')}>
-                  <Ionicons name="search" size={20} />
-                </TouchableHighlight>
-              ),
-            })}
-          />
-          <Stack.Screen
             name="Notes"
             component={Notes}
             options={({ navigation, route }) => ({
@@ -448,18 +460,33 @@ export default class Root extends React.Component {
               headerTitleStyle: {},
             })}
           />
+          <Stack.Screen
+            name="Favorites"
+            component={Favorites}
+            options={({ navigation, route }) => ({
+              headerRight: () => (
+                <TouchableHighlight
+                  underlayColor="transparent"
+                  onPress={() => navigation.navigate('Search')}>
+                  <Ionicons name="search" size={20} />
+                </TouchableHighlight>
+              ),
+            })}
+          />
+          <Stack.Screen name="New Event" component={EventCreate} />
+          <Stack.Screen name="Ask Question" component={QuestionAsk} />
+          <Stack.Screen name="Question Content" component={Question} />
           <Stack.Screen name="Userinfo" component={Userinfo} />
           <Stack.Screen name="User Status Edit" component={UserEdit} />
-          <Stack.Screen name="Question Content" component={Question} />
           <Stack.Screen name="Discover Content" component={DiscoverContent} />
           <Stack.Screen name="Search" component={Search} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Days" component={Days} />
           <Stack.Screen name="Comment" component={Comment} />
           <Stack.Screen name="Recent Views" component={Recent} />
+          <Stack.Screen name="Event List" component={EventList} />
           <Stack.Screen name="Note Share" component={NoteShare} />
-          <Stack.Screen name="New Event" component={EventCreate} />
           <Stack.Screen name="Teacher" component={Teacher} />
-          <Stack.Screen name="Ask Question" component={QuestionAsk} />
         </Stack.Navigator>
       </NavigationContainer>
     );

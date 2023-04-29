@@ -6,12 +6,13 @@ const globalStyle = {
   // label
   label: {
     fontSize: 14,
-    paddingLeft: 8,
-    paddingRight: 8,
+    padding: 4,
+    paddingLeft: 10,
+    paddingRight: 10,
     width: 'auto',
-    height: 20,
-    lineHeight: 23,
-    borderRadius: 8,
+    // height: 20,
+    // lineHeight: 23,
+    borderRadius: 10,
     overflow: 'hidden',
     marginRight: 10,
     textAlign: 'center',

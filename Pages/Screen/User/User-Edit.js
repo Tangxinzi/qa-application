@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ViewSwiper from 'react-native-swiper';
-import Api from '../../components/Api';
-import globalStyle from '../../assets/global-style';
+import Api from '../../../components/Api';
+import globalStyle from '../../../assets/global-style';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -56,13 +56,16 @@ class UserEdit extends React.Component {
           area: this.state.area || '',
           position: this.state.position || '',
           es: this.state.es || '',
+          job: this.state.job || '',
+          coin: this.state.coin || '',
+          description: this.state.description || '',
         },
       }),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log(this.state.tabActive, data);
-        this.props.navigation.goBack()
+        this.props.navigation.goBack();
       })
       .catch((error) => {
         console.log(error);
@@ -78,6 +81,7 @@ class UserEdit extends React.Component {
               <TouchableHighlight
                 style={{
                   ...styles.tabText,
+                  display: this.state.tabActive == 'Tutor' ? 'none' : 'flex',
                   borderBottomColor:
                     this.state.tabActive == item ? '#000' : '#FFF',
                 }}
@@ -91,11 +95,13 @@ class UserEdit extends React.Component {
         <View
           style={{
             ...styles.container,
-            display: this.state.tabActive == 'Study' ? 'flex' : 'none',
+            display: this.state.tabActive == 'Tutor' ? 'flex' : 'none',
           }}>
           <View style={globalStyle.form}>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Country</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Country
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -103,7 +109,9 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>School</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                School
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -111,7 +119,95 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Year</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Job
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                onChangeText={(job) => this.setState({ job })}
+              />
+            </View>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Area
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                onChangeText={(area) => this.setState({ area })}
+              />
+            </View>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                UpCoin
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                onChangeText={(coin) => this.setState({ coin })}
+              />
+            </View>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Description
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                onChangeText={(description) => this.setState({ description })}
+              />
+            </View>
+          </View>
+          <View style={styles.buttons}>
+            <TouchableHighlight
+              style={{ ...styles.button, backgroundColor: '#3eb96e' }}
+              underlayColor="transparent"
+              onPress={() => this.fetchData()}>
+              <Text allowFontScaling={false} style={styles.buttonText}>
+                Confirm
+              </Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={styles.button}
+              underlayColor="transparent"
+              onPress={() => this.props.navigation.goBack()}>
+              <Text allowFontScaling={false} style={styles.buttonText}>
+                Cancel
+              </Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+        <View
+          style={{
+            ...styles.container,
+            display: this.state.tabActive == 'Study' ? 'flex' : 'none',
+          }}>
+          <View style={globalStyle.form}>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Country
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                onChangeText={(country) => this.setState({ country })}
+              />
+            </View>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                School
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                onChangeText={(school) => this.setState({ school })}
+              />
+            </View>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Year
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -119,7 +215,9 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Major</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Major
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -153,7 +251,9 @@ class UserEdit extends React.Component {
           }}>
           <View style={globalStyle.form}>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Area</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Area
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -161,7 +261,9 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Position</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Position
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -169,7 +271,9 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Expected Salary</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Expected Salary
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -203,7 +307,9 @@ class UserEdit extends React.Component {
           }}>
           <View style={globalStyle.form}>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Area</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Area
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -211,7 +317,9 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Position</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Position
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -219,7 +327,9 @@ class UserEdit extends React.Component {
               />
             </View>
             <View style={globalStyle.formRow}>
-              <Text style={globalStyle.formText}>Expected Salary</Text>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                Expected Salary
+              </Text>
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
@@ -259,9 +369,10 @@ const styles = {
     justifyContent: 'space-between',
   },
   tabText: {
-    // flex: 1,
     width: '33.3%',
     textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 15,
     borderBottomWidth: 1,
   },

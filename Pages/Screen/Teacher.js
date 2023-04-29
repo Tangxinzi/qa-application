@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import ViewSwiper from 'react-native-swiper';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Api from '../../components/Api';
+import Avatar from '../../components/Avatar';
+import ActionSheet from 'react-native-actionsheet';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Text,
   View,
   Image,
   ScrollView,
   Dimensions,
+  DeviceEventEmitter,
   TouchableHighlight,
   useWindowDimensions,
 } from 'react-native';
@@ -16,9 +21,34 @@ class Teacher extends React.Component {
     super(props);
 
     this.state = {
+      userinfo: {},
       tabActive: 'Post',
       tabs: ['Post', 'Discussion', 'Live', 'Record', 'Comments'],
     };
+
+    this.fetchUserinfo(this.props.route.params.uid);
+  }
+
+  componentWillUnmount() {
+    DeviceEventEmitter.emit('Change');
+  }
+
+  fetchUserinfo(uid) {
+    fetch(Api.uri + '/api/v2/user/info/' + uid, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((userinfo) => {
+        this.setState({
+          userinfo,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   render() {
@@ -29,7 +59,9 @@ class Teacher extends React.Component {
             resizeMode="cover"
             style={styles.teacherImage}
             source={{
-              uri: 'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+              uri: this.state.userinfo.avatar
+                ? Api.uri + this.state.userinfo.avatar
+                : Api.avatar,
             }}
           />
           <View style={{ flex: 1 }}></View>
@@ -41,8 +73,14 @@ class Teacher extends React.Component {
           </View>
         </View>
         <View style={styles.userinfo}>
-          <Text style={styles.username}>Username</Text>
-          <Text>user info ...</Text>
+          <Text style={styles.username}>
+            {this.state.userinfo.user_name || ''}
+          </Text>
+          <Text>
+            {this.state.userinfo.other
+              ? this.state.userinfo.other.description
+              : ''}
+          </Text>
         </View>
         <View style={styles.userData}>
           {[0, 1, 2, 3].map((item, key) => {
@@ -54,7 +92,10 @@ class Teacher extends React.Component {
             );
           })}
         </View>
-        <View style={styles.tabs}>
+        <ScrollView
+          style={styles.tabs}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}>
           {this.state.tabs.map((item, key) => {
             return (
               <TouchableHighlight
@@ -72,7 +113,7 @@ class Teacher extends React.Component {
               </TouchableHighlight>
             );
           })}
-        </View>
+        </ScrollView>
       </ScrollView>
     );
   }
@@ -138,8 +179,8 @@ const styles = {
   tabText: {
     marginRight: 20,
     paddingBottom: 10,
-    borderBottomWidth: 2
-  }
+    borderBottomWidth: 2,
+  },
 };
 
 module.exports = Teacher;

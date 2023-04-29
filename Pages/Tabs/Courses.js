@@ -46,17 +46,7 @@ class Courses extends React.Component {
         index: 0,
         text: ['Edit', 'Cancel'],
       },
-      tutors: [
-        {
-          avatar:
-            'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-          username: 'Username',
-          country: '',
-          school: '',
-          job: '',
-          focus: '',
-        },
-      ],
+      tutors: [],
       event: [],
     };
 
@@ -64,17 +54,40 @@ class Courses extends React.Component {
     this.getUserinfo();
   }
 
+  fetchEventData() {
+    fetch(Api.uri + `/api/v2/event`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((event) => {
+        this.setState({
+          event,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   async getUserinfo() {
     var userinfo = await AsyncStorage.getItem('userinfo');
-    userinfo = JSON.parse(userinfo);
+    userinfo = userinfo ? JSON.parse(userinfo) : {};
     this.setState({ userinfo });
 
     this.props.navigation.setOptions({
+      headerStyle: {
+        borderBottomWidth: 0,
+        backgroundColor: 'transparent',
+      },
       headerLeft: (props) => (
         <TouchableHighlight
           underlayColor="transparent"
           onPress={() =>
-            this.props.navigation.navigate(userinfo ? 'Userinfo' : 'Login')
+            this.props.navigation.navigate(userinfo._id ? 'Userinfo' : 'Login')
           }>
           <Avatar {...userinfo} />
         </TouchableHighlight>
@@ -83,13 +96,11 @@ class Courses extends React.Component {
   }
 
   fetchData() {
-    fetch(Api.uri + '/api/course?type=json')
+    fetch(Api.uri + '/api/v2/user/tutors')
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      .then((tutors) => {
         this.setState({
-          tutors: data.tutors,
-          event: data.event,
+          tutors,
         });
       })
       .catch((error) => {
@@ -166,7 +177,9 @@ class Courses extends React.Component {
                 underlayColor="transparent"
                 onPress={() => {
                   this.setState({ labelsActive: item.text });
-                  this.fetchData();
+                  item.text == 'Tutors'
+                    ? this.fetchData()
+                    : this.fetchEventData();
                 }}>
                 <View
                   style={{
@@ -183,7 +196,6 @@ class Courses extends React.Component {
               </TouchableHighlight>
             );
           })}
-
           <Ionicons style={styles.labelIcon} name="filter" size={20} />
         </View>
 
@@ -198,11 +210,17 @@ class Courses extends React.Component {
                 <View style={styles.teacherHead}>
                   <TouchableHighlight
                     underlayColor="transparent"
-                    onPress={() => this.props.navigation.navigate('Teacher')}>
+                    onPress={() =>
+                      this.props.navigation.navigate('Teacher', {
+                        uid: item._id,
+                      })
+                    }>
                     <Image
                       resizeMode="cover"
                       style={styles.teacherImage}
-                      source={{ uri: item.user_avatar }}
+                      source={{
+                        uri: item.avatar ? Api.uri + item.avatar : Api.avatar,
+                      }}
                     />
                   </TouchableHighlight>
                   <Text
@@ -212,25 +230,25 @@ class Courses extends React.Component {
                     {item.user_name}
                   </Text>
                   <View>
-                    <Text allowFontScaling={false}>99%</Text>
+                    <Text allowFontScaling={false}>-%</Text>
                   </View>
                 </View>
                 <View style={styles.teacherCon}>
                   <Text style={styles.teacherLabel} allowFontScaling={false}>
-                    Country: {item.country}
+                    Country: {item.other.country}
                   </Text>
                   <Text style={styles.teacherLabel} allowFontScaling={false}>
-                    School: {item.school}
+                    School: {item.other.school}
                   </Text>
                   <Text style={styles.teacherLabel} allowFontScaling={false}>
-                    Job: {item.job}
+                    Job: {item.other.job}
                   </Text>
                   <Text style={styles.teacherLabel} allowFontScaling={false}>
-                    Focus Area: {item.focus}
+                    Focus Area: {item.other.area}
                   </Text>
                 </View>
                 <Text style={styles.extLabel} allowFontScaling={false}>
-                  {key + 1} Hour
+                  {item.other.coin} Hour
                 </Text>
               </View>
             );
@@ -246,7 +264,7 @@ class Courses extends React.Component {
               <View style={styles.teacher}>
                 <View style={styles.teacherHead}>
                   <Text style={styles.teacherUserName} allowFontScaling={false}>
-                    {item.title || ''}
+                    {item.event_title || ''}
                   </Text>
                   <TouchableHighlight
                     underlayColor="transparent"
@@ -258,13 +276,25 @@ class Courses extends React.Component {
                   </TouchableHighlight>
                 </View>
                 <View style={styles.teacherCon}>
-                  <Text style={styles.teacherLabel} allowFontScaling={false}>
-                    {item.content}
+                  <Text allowFontScaling={false}>
+                    {item.event_content || ''}
                   </Text>
                 </View>
-                <Text style={styles.extLabel} allowFontScaling={false}>
-                  {item.time || ''}
-                </Text>
+                <View
+                  style={{
+                    ...styles.teacherCon,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 5,
+                  }}>
+                  <Text allowFontScaling={false}>
+                    Estimated UpCoin {item.event_coin * item.event_duration}
+                  </Text>
+                  <Text allowFontScaling={false}>
+                    {item.event_start_time || ''}
+                  </Text>
+                </View>
                 <ActionSheet
                   ref={(o) => (this.ActionSheet = o)}
                   title={'Select ...'}
@@ -346,7 +376,7 @@ const styles = {
   teacherHead: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    // marginBottom: 15,
   },
   teacherImage: {
     width: 30,

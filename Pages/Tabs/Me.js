@@ -31,24 +31,24 @@ class Me extends React.Component {
       tabActive: 'Post',
       tabs: [
         {
-          text: 'Question',
+          text: 'Questions',
           name: 'Question List',
           icon: 'receipt-outline',
         },
         {
-          text: 'Comment',
+          text: 'Comments',
           name: 'Comment',
           icon: 'chatbubble-ellipses-outline',
         },
         {
-          text: 'Like',
-          name: 'Post',
-          icon: 'heart-outline',
-        },
-        {
           text: 'Favorites',
           name: 'Favorites',
-          icon: 'folder-outline',
+          icon: 'star-outline',
+        },
+        {
+          text: 'Events',
+          name: 'Event List',
+          icon: 'browsers-outline',
         },
         {
           text: 'Recent',
@@ -83,9 +83,16 @@ class Me extends React.Component {
   }
 
   async getUserinfo() {
-    const userinfo = await AsyncStorage.getItem('userinfo');
-    this.setState({ userinfo: JSON.parse(userinfo) });
-    this.fetchUserinfo();
+    var userinfo = await AsyncStorage.getItem('userinfo');
+    userinfo = userinfo ? JSON.parse(userinfo) : {};
+    this.setState({ userinfo });
+
+    this.props.navigation.setOptions({
+      headerStyle: {
+        borderBottomWidth: 0,
+        backgroundColor: 'transparent',
+      }
+    });
   }
 
   fetchUserinfo() {
@@ -106,11 +113,6 @@ class Me extends React.Component {
       });
   }
 
-  clear() {
-    AsyncStorage.removeItem('coin');
-    alert('clear');
-  }
-
   render() {
     return (
       <ScrollView style={styles.container}>
@@ -118,21 +120,28 @@ class Me extends React.Component {
           style={styles.data}
           activeOpacity={0.85}
           underlayColor="transparent"
-          onPress={() => this.props.navigation.navigate(this.state.userinfo ? 'Userinfo' : 'Login')}>
+          onPress={() =>
+            this.props.navigation.navigate(
+              this.state.userinfo ? 'Userinfo' : 'Login'
+            )
+          }>
           <View style={styles.head}>
             <Image
               resizeMode="cover"
               style={styles.teacherImage}
               source={{
-                uri: this.state.userinfo && this.state.userinfo.avatar || Api.avatar,
+                uri:
+                  (this.state.userinfo && this.state.userinfo.avatar
+                    ? Api.uri + this.state.userinfo.avatar
+                    : null) || Api.avatar,
               }}
             />
             <View style={styles.info}>
               <Text allowFontScaling={false} style={styles.username}>
-                {this.state.userinfo.user_name || ''}
+                {this.state.userinfo ? this.state.userinfo.user_name : 'Login'}
               </Text>
               <Text allowFontScaling={false}>
-                {this.state.userinfo.identity || ''}
+                {this.state.userinfo ? this.state.userinfo.user_identity : 'Not logged in yet'}
               </Text>
             </View>
           </View>
@@ -231,19 +240,6 @@ class Me extends React.Component {
                 </TouchableHighlight>
               );
             })}
-          <TouchableHighlight
-            style={styles.data}
-            activeOpacity={0.85}
-            underlayColor="transparent"
-            onPress={() => this.clear()}>
-            <>
-              <Ionicons name={'help-circle-outline'} size={20} />
-              <Text allowFontScaling={false} style={styles.iconText}>
-                Clear Data
-              </Text>
-              <Ionicons name="chevron-forward-outline" size={20} />
-            </>
-          </TouchableHighlight>
         </View>
         <View style={styles.tabs}></View>
       </ScrollView>

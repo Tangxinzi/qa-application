@@ -5,6 +5,31 @@ import { TouchableHighlight, View, Button, Text, Image } from 'react-native';
 export default class Avatar extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      userinfo: {
+        avatar: ''
+      },
+    };
+    
+    props._id ? this.fetchUserinfo() : {};
+  }
+
+  fetchUserinfo() {
+    fetch(Api.uri + '/api/v2/user/info/' + this.props._id, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          userinfo: data,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   render() {
@@ -13,11 +38,14 @@ export default class Avatar extends React.Component {
         <Image
           style={styles.logo}
           source={{
-            uri: this.props.avatar || Api.avatar,
+            uri:
+              (this.state.userinfo && this.state.userinfo.avatar
+                ? Api.uri + this.state.userinfo.avatar
+                : null) || Api.avatar,
           }}
         />
         <Text allowFontScaling={false} style={{ fontSize: 16 }}>
-          {this.props.user_name || ''}
+          {this.state.userinfo.user_name || 'Login'}
         </Text>
       </View>
     );

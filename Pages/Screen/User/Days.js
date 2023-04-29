@@ -16,13 +16,13 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-export default class QuestionList extends React.Component {
+export default class Days extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       userinfo: {},
-      questions: [],
+      days: [],
     };
 
     this.getUserinfo();
@@ -40,17 +40,12 @@ export default class QuestionList extends React.Component {
   }
 
   fetchData() {
-    fetch(Api.uri + '/api/v2/question?user_id=' + this.state.userinfo._id, {
-      // method: 'GET',
-      // headers: {
-      //   Accept: 'application/json',
-      //   'Content-Type': 'application/json',
-      // },
-    })
+    fetch(Api.uri + '/api/v2/user/sign?user_id=' + this.state.userinfo._id)
       .then((response) => response.json())
-      .then((data) => {
+      .then((days) => {
+        console.log(days);
         this.setState({
-          questions: data,
+          days,
         });
       })
       .catch((error) => {
@@ -61,23 +56,8 @@ export default class QuestionList extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
-        <View style={styles.tool}>
-          <Text allowFontScaling={false}>
-            {this.state.questions.length} Question
-          </Text>
-          <TouchableHighlight style={styles.button}>
-            <>
-              <Text allowFontScaling={false}>Like</Text>
-              <Text
-                allowFontScaling={false}
-                style={{ marginLeft: 20, fontWeight: '500' }}>
-                Time
-              </Text>
-            </>
-          </TouchableHighlight>
-        </View>
         <View style={styles.contents}>
-          {this.state.questions.map((item, key) => {
+          {this.state.days.map((item, key) => {
             return (
               <View style={styles.content}>
                 <View style={styles.contentMain}>
@@ -85,18 +65,12 @@ export default class QuestionList extends React.Component {
                     allowFontScaling={false}
                     style={styles.title}
                     numberOfLines={1}>
-                    {item.question_name} {item.question_title}
-                  </Text>
-                  <Text allowFontScaling={false} numberOfLines={2}>
-                    {item.question_description || faker.lorem.text()}
+                    {item.day}
                   </Text>
                 </View>
                 <View style={styles.contentFoot}>
-                  <Text allowFontScaling={false} style={{ color: 'gray' }}>
-                    80 Likes · 95 Comments
-                  </Text>
-                  <Text allowFontScaling={false} style={{ color: 'gray' }}>
-                    {Moment(item.created_at).format('YYYY-MM-DD')}
+                  <Text allowFontScaling={false} style={{ color: 'grey' }}>
+                    {Moment(item.created_at).format('YYYY-MM-DD hh:mm:ss')}
                   </Text>
                 </View>
               </View>

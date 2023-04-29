@@ -50,6 +50,7 @@ class Login extends React.Component {
     })
       .then((response) => response.json())
       .then((userinfo) => {
+        alert(userinfo)
         AsyncStorage.setItem('userinfo', JSON.stringify(userinfo));
         this.props.navigation.navigate('Home')
       })

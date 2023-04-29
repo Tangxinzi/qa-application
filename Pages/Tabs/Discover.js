@@ -3,6 +3,8 @@ import ViewSwiper from 'react-native-swiper';
 import globalStyle from '../../assets/global-style';
 import Api from '../../components/Api';
 import Avatar from '../../components/Avatar';
+import moment from 'moment';
+import { faker } from '@faker-js/faker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -16,6 +18,8 @@ import {
   TouchableHighlight,
   useWindowDimensions,
 } from 'react-native';
+
+let { width, height } = Dimensions.get('window');
 
 class Home extends React.Component {
   constructor(props) {
@@ -64,19 +68,30 @@ class Home extends React.Component {
       this.fetchData();
       this.getUserinfo();
     });
+
+    this.interval = this.props.navigation.addListener('focus', () => {
+      this.fetchData();
+      this.getUserinfo();
+    });
   }
 
   async getUserinfo() {
     var userinfo = await AsyncStorage.getItem('userinfo');
-    userinfo = JSON.parse(userinfo);
+    userinfo = userinfo ? JSON.parse(userinfo) : {};
     this.setState({ userinfo });
 
     this.props.navigation.setOptions({
+      headerStyle: {
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+        backgroundColor: 'transparent',
+      },
       headerLeft: (props) => (
         <TouchableHighlight
           underlayColor="transparent"
           onPress={() =>
-            this.props.navigation.navigate(userinfo ? 'Userinfo' : 'Login')
+            this.props.navigation.navigate(userinfo._id ? 'Userinfo' : 'Login')
           }>
           <Avatar {...userinfo} />
         </TouchableHighlight>
@@ -96,7 +111,6 @@ class Home extends React.Component {
           this.setState({
             questions: data,
           });
-          console.log(this.state.questions);
         }
       })
       .catch((error) => {
@@ -180,12 +194,32 @@ class Home extends React.Component {
               <TouchableOpacity
                 key={key}
                 underlayColor="transparent"
-                onPress={() => this.onPress()}>
+                onPress={() =>
+                  this.props.navigation.navigate('Question Content', {
+                    id: item._id,
+                  })
+                }>
                 <View style={styles.row}>
                   <View style={styles.headUserRow}>
-                    <Text style={styles.rowTitle} allowFontScaling={false}>
-                      {item.question_name} {item.title}
-                    </Text>
+                    <Image
+                      resizeMode="cover"
+                      style={styles.rowAvatar}
+                      source={{
+                        uri:
+                          (item.userinfo[0] && item.userinfo[0].avatar
+                            ? Api.uri + item.userinfo[0].avatar
+                            : null) || Api.avatar,
+                      }}
+                    />
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.rowTitle} allowFontScaling={false} numberOfLines={2}>
+                        {item.question_name} {item.title}
+                      </Text>
+                      <Text style={styles.userName} allowFontScaling={false}>
+                        {item.userinfo[0] ? item.userinfo[0].user_name : ''} ·{' '}
+                        {moment(item.created_at).toNow()}
+                      </Text>
+                    </View>
                     <Ionicons
                       name={
                         item.question_solve
@@ -203,14 +237,18 @@ class Home extends React.Component {
                         alignItems: 'flex-start',
                         justifyContent: 'space-between',
                       }}>
-                      <Text allowFontScaling={false}>
-                        {item.description || 'description...'}
-                      </Text>
-                      <View style={{ ...styles.labels, margin: 0, padding: 0 }}>
-                        {item.labels &&
-                          item.labels.map((item, key) => {
+                      <View style={{ width: width * 0.55 }}>
+                        <Text allowFontScaling={false} numberOfLines={3}>
+                          {item.question_detail || faker.lorem.text()}
+                        </Text>
+                      </View>
+                      <View
+                        style={{ ...styles.labels, marginTop: 10, padding: 0 }}>
+                        {['ST1131', 'Statistic'].map((item, key) => {
                             return (
-                              <Text style={globalStyle.label} key={key}>
+                              <Text
+                                style={{ ...globalStyle.label }}
+                                allowFontScaling={false}>
                                 {item}
                               </Text>
                             );
@@ -220,34 +258,24 @@ class Home extends React.Component {
                     <Image
                       resizeMode="cover"
                       style={styles.image}
-                      source={{ uri: item.image }}
+                      source={{ uri: item.file ? Api.uri + item.file : '' }}
                     />
                   </View>
                   <View style={styles.rowFoot}>
-                    <Image
-                      resizeMode="cover"
-                      style={styles.rowAvatar}
-                      source={{
-                        uri: item.userinfo[0].avatar || Api.avatar,
-                      }}
-                    />
-                    <Text style={styles.userName} allowFontScaling={false}>
-                      {item.userinfo[0].user_name}
-                    </Text>
                     <Text allowFontScaling={false} style={styles.rowFootText}>
-                      Like
+                      Like {item.like || 0}
                     </Text>
                     <Text allowFontScaling={false} style={styles.rowFootText}>
                       ·
                     </Text>
                     <Text allowFontScaling={false} style={styles.rowFootText}>
-                      Reply
+                      Reply {item.comment || 0}
                     </Text>
                     <Text allowFontScaling={false} style={styles.rowFootText}>
                       ·
                     </Text>
                     <Text allowFontScaling={false} style={styles.rowFootText}>
-                      View {item.view}
+                      Read {item.question_view || 0}
                     </Text>
                   </View>
                 </View>
@@ -262,7 +290,7 @@ class Home extends React.Component {
 
 const styles = {
   container: {
-    backgroundColor: '#FFF',
+    // backgroundColor: '#FFF',
   },
   labels: {
     padding: 15,
@@ -289,7 +317,7 @@ const styles = {
     marginRight: 30,
     paddingBottom: 10,
     borderBottomWidth: 2,
-    borderBottomColor: '#FFF',
+    borderBottomColor: 'transparent',
   },
   tabActiveText: {
     borderBottomWidth: 2,
@@ -300,7 +328,8 @@ const styles = {
   rows: {},
   row: {
     padding: 15,
-    borderTopWidth: 10,
+    borderWidth: 0,
+    borderTopWidth: 7.5,
     borderTopColor: '#e6e6e6',
     backgroundColor: '#FFF',
     // flexDirection: 'row',
@@ -309,12 +338,13 @@ const styles = {
   rowTitle: {
     fontWeight: '600',
     fontSize: 16,
+    marginBottom: 3,
   },
   rowAvatar: {
-    width: 16,
-    height: 16,
-    borderRadius: 16,
-    marginRight: 6,
+    width: 32,
+    height: 32,
+    borderRadius: 32,
+    marginRight: 8,
   },
   rowContent: {
     flexDirection: 'row',
@@ -322,7 +352,7 @@ const styles = {
   },
   image: {
     marginLeft: 10,
-    width: 110,
+    width: width * 0.3,
     height: 65,
     borderRadius: 6,
   },
@@ -333,9 +363,9 @@ const styles = {
     justifyContent: 'space-between',
   },
   userName: {
-    fontWeight: '600',
     fontSize: 12,
     flex: 1,
+    color: 'grey',
   },
   userImage: {
     width: 40,
@@ -350,7 +380,8 @@ const styles = {
   },
   rowFootText: {
     fontSize: 12,
-    marginLeft: 10,
+    marginRight: 10,
+    color: 'grey',
   },
 };
 
