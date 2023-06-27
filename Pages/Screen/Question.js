@@ -36,6 +36,7 @@ class Question extends React.Component {
     };
 
     this.getUserinfo();
+    this.fetchData(this.props.route.params.id);
   }
 
   componentWillUnmount() {
@@ -501,8 +502,9 @@ const styles = {
   // head
   head: {},
   headTitleText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
+    marginBottom: 15
   },
   headUser: {
     marginTop: 0,

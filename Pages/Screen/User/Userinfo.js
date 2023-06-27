@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Api from '../../../components/Api';
+import List from '../../../components/List';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -163,34 +164,20 @@ export default class Userinfo extends React.Component {
               {this.state.userinfo.user_name || ''}
             </Text>
           </View>
-          <View style={styles.textSubmitFoot}>
-            <TouchableHighlight
-              underlayColor="transparent"
-              style={{
-                backgroundColor: 'skyblue',
-                width: 145,
-                height: 46,
-                justifyContent: 'center',
-                borderRadius: 23,
-              }}
-              onPress={() => {
-                AsyncStorage.removeItem('userinfo');
-                this.props.navigation.navigate('Login');
-              }}>
-              <Text
-                allowFontScaling={false}
-                numberOfLines={1}
-                style={{
-                  fontSize: 16,
-                  fontWeight: '600',
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  textAlign: 'center',
-                  marginHorizontal: 16,
-                }}>
-                LOGOUT
-              </Text>
-            </TouchableHighlight>
-          </View>
+
+          <List
+            text={'My Upcoin'}
+            style={{ borderBottomWidth: 0 }}
+            onPress={() => this.props.navigation.navigate('Upcoin')}
+          />
+          <List
+            text={'Logout'}
+            style={{ borderBottomWidth: 0 }}
+            onPress={() => {
+              AsyncStorage.removeItem('userinfo');
+              this.props.navigation.navigate('Login');
+            }}
+          />
         </View>
       </ScrollView>
     );

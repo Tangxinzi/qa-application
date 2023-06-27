@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Api from '../../components/Api';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Text,
@@ -15,20 +17,32 @@ import {
   Platform,
   TextInput,
   RefreshControl,
-  SafeAreaView,
+  Keyboard,
   KeyboardAvoidingView,
   ActivityIndicator,
   DeviceEventEmitter,
   TouchableHighlight,
 } from 'react-native';
+import Button from '../../components/Button';
+import TextInputContainer from '../../components/TextInputContainer';
 
-class Login extends React.Component {
+const validationSchema = Yup.object().shape({
+  email: Yup.string().email().required('email is required.'),
+  password: Yup.string()
+    .label('password')
+    .min(3)
+    .max(12)
+    .required('password is required.')
+    .matches(/^\w+$/, 'Special characters present.'),
+});
+
+export default class Login extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: '123456789@qq.com',
-      password: '123456789',
+      email: '',
+      password: '',
     };
   }
 
@@ -40,7 +54,7 @@ class Login extends React.Component {
     fetch(Api.uri + `/api/v2/user/login`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -50,9 +64,9 @@ class Login extends React.Component {
     })
       .then((response) => response.json())
       .then((userinfo) => {
-        alert(userinfo)
+        // alert(userinfo);
         AsyncStorage.setItem('userinfo', JSON.stringify(userinfo));
-        this.props.navigation.navigate('Home')
+        this.props.navigation.navigate('Home');
       })
       .catch((error) => {
         console.log(error);
@@ -65,94 +79,70 @@ class Login extends React.Component {
         <View>
           <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
           <View style={styles.login}>
+            <View style={styles.avatarContainer}>
+              <Image
+                resizeMode="cover"
+                style={styles.avatar}
+                source={{
+                  uri: 'https://mart.ferer.net/web/statics/images/wx_avatar.png',
+                }}
+              />
+            </View>
             <KeyboardAvoidingView keyboardVerticalOffset={10}>
-              <View style={styles.textInputContainer}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ color: 'rgb(51, 51, 51)' }}>
-                  Email Address
-                </Text>
-                <TextInput
-                  allowFontScaling={false}
-                  style={styles.textInput}
-                  placeholder="For eg. name@example.com"
-                  clearButtonMode="while-editing"
-                  keyboardType="email-address"
-                  defaultValue={this.state.email}
-                  placeholderTextColor="#CCC"
-                  onChangeText={(email) => this.setState({ email })}
-                />
-              </View>
-              <View style={styles.textInputContainer}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ color: 'rgb(51, 51, 51)' }}>
-                  Password
-                </Text>
-                <TextInput
-                  allowFontScaling={false}
-                  style={styles.textInput}
-                  placeholder=""
-                  clearButtonMode="while-editing"
-                  password={true}
-                  defaultValue={this.state.password}
-                  placeholderTextColor="#CCC"
-                  secureTextEntry
-                  onChangeText={(password) => this.setState({ password })}
-                />
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  onPress={() => {
-                    var url = 'https://www.baidu.com/';
-                    Linking.canOpenURL(url)
-                      .then((supported) => {
-                        if (!supported) {
-                          console.warn("Can't handle url: " + url);
-                        } else {
-                          return Linking.openURL(url);
-                        }
-                      })
-                      .catch((err) => console.error('An error occurred', url));
-                  }}>
-                  <Text
-                    allowFontScaling={false}
-                    style={{ marginTop: 15, color: 'grey', fontWeight: '700' }}>
-                    Forgot password?
-                  </Text>
-                </TouchableHighlight>
-              </View>
-              <View style={styles.textSubmitFoot}>
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  style={{
-                    backgroundColor:
-                      this.state.email != '' && this.state.password != ''
-                        ? 'skyblue'
-                        : 'grey',
-                    width: 145,
-                    height: 46,
-                    justifyContent: 'center',
-                    borderRadius: 23,
-                  }}
-                  onPress={() => {
-                    if (this.state.email != '' && this.state.password != '') {
-                      this.fetchLogin();
-                    }
-                  }}>
-                  <Text
-                    allowFontScaling={false}
-                    numberOfLines={1}
-                    style={{
-                      fontSize: 16,
-                      fontWeight: '600',
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      textAlign: 'center',
-                      marginHorizontal: 16,
-                    }}>
-                    LOGIN
-                  </Text>
-                </TouchableHighlight>
-              </View>
+              <Formik
+                onSubmit={(values) => {
+                  Keyboard.dismiss();
+                  this.setState({
+                    email: values.email,
+                    password: values.password
+                  })
+                  this.fetchLogin();
+                }}
+                validationSchema={validationSchema}>
+                {({ handleChange, handleSubmit, values, errors }) => (
+                  <View>
+                    <TextInputContainer
+                      title={''}
+                      onChangeText={handleChange('email')}
+                      name="email"
+                      value={values.email}
+                      label="email"
+                      placeholder={'Please enter your Email'}
+                    />
+                    {errors.email ? (
+                      <Text style={{ color: 'red' }}>{errors.email}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <TextInputContainer
+                      title={''}
+                      onChangeText={handleChange('password')}
+                      name="password"
+                      value={values.password}
+                      label="password"
+                      placeholder={'Please enter your Password'}
+                      password={true}
+                      secureTextEntry={false}
+                    />
+                    {errors.password ? (
+                      <Text style={{ color: 'red' }}>{errors.password}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <View style={styles.textSubmitFoot}>
+                      <Button text="Log In" onPress={handleSubmit} />
+                      <TouchableHighlight
+                        underlayColor="transparent"
+                        style={{ marginTop: 20 }}
+                        onPress={() =>
+                          this.props.navigation.navigate('Register')
+                        }>
+                        <Text>No account yet, go to register.</Text>
+                      </TouchableHighlight>
+                    </View>
+                  </View>
+                )}
+              </Formik>
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -169,6 +159,15 @@ const styles = {
     width: '100%',
     backgroundColor: '#FFF',
   },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 50,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+  },
   login: {
     position: 'relative',
     padding: 0,
@@ -176,26 +175,11 @@ const styles = {
     backgroundColor: '#FFF',
     borderRadius: 10,
   },
-  textInput: {
-    width: '100%',
-    borderColor: '#d3d6d9',
-    borderWidth: 1,
-    padding: 15,
-    marginTop: 10,
-    fontWeight: '700',
-    borderRadius: 1,
-    color: '#111',
-    textAlign: 'left',
-  },
   textSubmitFoot: {
+    position: 'relative',
+    bottom: -230,
     marginTop: 30,
     marginBottom: 10,
     alignItems: 'center',
   },
-  textInputContainer: {
-    width: '100%',
-    marginBottom: 30,
-  },
 };
-
-module.exports = Login;

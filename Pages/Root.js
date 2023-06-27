@@ -4,6 +4,7 @@ import {
   View,
   Text,
   Image,
+  Linking,
   FlatList,
   Platform,
   TouchableHighlight,
@@ -31,6 +32,7 @@ import Login from './Screen/Login';
 import Register from './Screen/Register';
 import Question from './Screen/Question';
 import Chats from './Screen/Chats';
+import GPT from './Screen/GPT';
 import QuestionAsk from './Screen/QuestionAsk';
 import EventCreate from './Screen/Event-Create';
 import Teacher from './Screen/Teacher';
@@ -436,19 +438,6 @@ export default class Root extends React.Component {
             })}
           />
           <Stack.Screen
-            name="Login"
-            component={Login}
-            options={({ navigation, route }) => ({
-              headerRight: () => (
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  onPress={() => navigation.navigate('Register')}>
-                  <Text>Register</Text>
-                </TouchableHighlight>
-              ),
-            })}
-          />
-          <Stack.Screen
             name="Upcoin"
             component={Upcoin}
             options={({ navigation, route }) => ({
@@ -473,6 +462,7 @@ export default class Root extends React.Component {
               ),
             })}
           />
+          <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="New Event" component={EventCreate} />
           <Stack.Screen name="Ask Question" component={QuestionAsk} />
           <Stack.Screen name="Question Content" component={Question} />
@@ -480,8 +470,32 @@ export default class Root extends React.Component {
           <Stack.Screen name="User Status Edit" component={UserEdit} />
           <Stack.Screen name="Discover Content" component={DiscoverContent} />
           <Stack.Screen name="Search" component={Search} />
-          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={({ navigation, route }) => ({
+              headerRight: () => (
+                <TouchableHighlight
+                  underlayColor="transparent"
+                  onPress={() => {
+                    var url = 'https://www.baidu.com/';
+                    Linking.canOpenURL(url)
+                      .then((supported) => {
+                        if (!supported) {
+                          console.warn("Can't handle url: " + url);
+                        } else {
+                          return Linking.openURL(url);
+                        }
+                      })
+                      .catch((err) => console.error('An error occurred', url));
+                  }}>
+                  <Text>Forgot password?</Text>
+                </TouchableHighlight>
+              ),
+            })}
+          />
           <Stack.Screen name="Days" component={Days} />
+          <Stack.Screen name="AI Helper" component={GPT} />
           <Stack.Screen name="Comment" component={Comment} />
           <Stack.Screen name="Recent Views" component={Recent} />
           <Stack.Screen name="Event List" component={EventList} />

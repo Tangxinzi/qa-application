@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ViewSwiper from 'react-native-swiper';
 import globalStyle from '../../../assets/global-style';
-import moment from 'moment';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Api from '../../../components/Api';
+import Moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Text,
@@ -83,7 +83,7 @@ class Comment extends React.Component {
                       {item.comment_content || ''}
                     </Text>
                     <Text allowFontScaling={false}>
-                      {moment(item.created_at).format('YYYY-MM-DD')}
+                      {Moment(item.created_at).format('YYYY-MM-DD')}
                     </Text>
                   </View>
                   <TouchableHighlight

@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import ViewSwiper from 'react-native-swiper';
+import Api from '../components/Api';
+import None from '../components/None';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import moment from 'moment';
+moment.localeData('en');
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -18,63 +23,42 @@ class LearnCoin extends React.Component {
     super(props);
 
     this.state = {
-      count: 1500,
-      data: [
-        {
-          num: 400,
-          date: '2023/03/01',
-          type: 'My Post',
-          content: 'Published an article',
-          route: 'Post',
-        },
-        {
-          num: 200,
-          date: '2023/03/01',
-          type: 'Comment',
-          content: 'Commented on the article',
-          route: 'Comment',
-        },
-        {
-          num: 400,
-          date: '2023/03/01',
-          type: 'My Post',
-          content: 'Published an article',
-          route: 'Post',
-        },
-        {
-          num: 100,
-          date: '2023/03/01',
-          type: 'Like',
-          content: 'Like content',
-          route: 'Comment',
-        },
-        {
-          num: 400,
-          date: '2023/03/01',
-          type: 'Share',
-          content: 'Shared article 「...」',
-          route: 'Note Share',
-        },
-      ],
+      userinfo: {},
+      count: 0,
+      data: {
+        sum: 0,
+        coins: [],
+      },
     };
 
-    AsyncStorage.getItem('coin')
-      .then((coin) => {
-        coin = JSON.parse(coin)
-        var data = this.state.data, count = 0
-        for(let i = 0; i < coin.length; i++) {
-          data.unshift(coin[i])
-        }
-        for(let i = 0; i < data.length; i++) {
-          count += data[i].num
-        }
+    this.getUserinfo();
+  }
+
+  async getUserinfo() {
+    // set local storage
+    var userinfo = await AsyncStorage.getItem('userinfo');
+    userinfo = userinfo ? JSON.parse(userinfo) : {};
+    this.setState({ userinfo });
+
+    // get user info
+    this.fetchUserCoin();
+  }
+
+  fetchUserCoin() {
+    fetch(Api.uri + '/api/v2/coin?user_id=' + this.state.userinfo._id, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
         this.setState({
-          count,
-          data
-        })
+          data,
+        });
       })
       .catch((error) => {
-        console.log('error', error);
+        console.log(error);
       });
   }
 
@@ -82,9 +66,13 @@ class LearnCoin extends React.Component {
     return (
       <ScrollView style={styles.container}>
         <StatusBar barStyle={'dark-content'} backgroundColor={'#FFF'} />
-        <View style={styles.coin}>
+        <View
+          style={{
+            ...styles.coin,
+            display: this.state.data.coins.length ? 'flex' : 'none',
+          }}>
           <Text allowFontScaling={false} style={styles.coinNum}>
-            {this.state.count || 0}
+            {this.state.data.sum}
           </Text>
           <Text
             allowFontScaling={false}
@@ -94,22 +82,29 @@ class LearnCoin extends React.Component {
         </View>
         <View style={styles.content}>
           <View style={styles.lists}>
-            {this.state.data.map((item, key) => {
+            {!this.state.data.coins.length ? <None /> : <></>}
+            {this.state.data.coins.map((item, key) => {
               return (
                 <TouchableHighlight
                   underlayColor="transparent"
                   onPress={() => {
-                    this.props.navigation.navigate(item.route);
+                    switch (item.coin_type) {
+                      case 'Question':
+                        this.props.navigation.navigate('Question Content', {
+                          id: item.related_id,
+                        });
+                        break;
+                    }
                   }}>
                   <View style={styles.list}>
                     <View style={styles.listRow}>
                       <Text
                         allowFontScaling={false}
                         style={{ fontWeight: '600' }}>
-                        {item.type}
+                        {item.coin_type}
                       </Text>
                       <Text allowFontScaling={false} style={styles.listCoinNum}>
-                        +{item.num}
+                        +{item.num || 0}
                       </Text>
                     </View>
                     <Text
@@ -119,9 +114,13 @@ class LearnCoin extends React.Component {
                     </Text>
                     <View style={styles.listRow}>
                       <Text allowFontScaling={false} style={styles.listCoinNum}>
-                        {item.date}
+                        {moment(item.created_at).format('YYYY-MM-DD HH:mm')}
                       </Text>
-                      <Ionicons name="chevron-forward-outline" size={10} />
+                      <Ionicons
+                        style={{ display: item.data ? 'flex' : 'none' }}
+                        name="chevron-forward-outline"
+                        size={10}
+                      />
                     </View>
                   </View>
                 </TouchableHighlight>

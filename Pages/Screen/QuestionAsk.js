@@ -37,7 +37,7 @@ class QuestionAsk extends React.Component {
       },
     };
 
-    // this.getUserinfo();
+    this.getUserinfo();
   }
 
   componentDidMount() {
@@ -72,16 +72,15 @@ class QuestionAsk extends React.Component {
 
   async upload() {
     const data = new FormData();
-    data.append('file', {
+    data.append('image', {
       name: 'image',
-      // type: 'image/png',
       uri:
         Platform.OS === 'android'
           ? this.state.file
           : this.state.file.uri.replace('file://', ''),
     });
 
-    await fetch(Api.uri + '/api/v2/file/upload', {
+    await fetch(Api.uri + '/api/v2/tool/ocr', {
       method: 'post',
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -92,7 +91,6 @@ class QuestionAsk extends React.Component {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log(response);
         if (response.errno == 0) {
           this.setState({
             upload: response.data,
@@ -106,6 +104,11 @@ class QuestionAsk extends React.Component {
 
   async createQuestion() {
     await this.upload();
+    var question_detail = '';
+    this.state.upload.ocr.words_result.map(
+      (item) => (question_detail += item.words)
+    );
+
     await fetch(Api.uri + '/api/v2/question/create', {
       method: 'post',
       headers: {
@@ -116,12 +119,13 @@ class QuestionAsk extends React.Component {
         user_id: this.state.userinfo._id,
         question_name: this.state.moduleName || '',
         question_code: this.state.moduleCode || '',
-        file: this.state.upload.url || '',
+        question_detail: question_detail || '',
+        file: this.state.upload.image.fileSrc || '',
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        alert(JSON.stringify(data));
+        alert('create success.');
         this.props.navigation.navigate('Discover');
       })
       .catch((error) => {
@@ -221,6 +225,7 @@ class QuestionAsk extends React.Component {
                 <TextInput
                   style={globalStyle.formInput}
                   placeholder="Please input ..."
+                  allowFontScaling={false}
                   defaultValue={
                     (this.state.userinfo.other &&
                       this.state.userinfo.other.country) ||
@@ -242,6 +247,7 @@ class QuestionAsk extends React.Component {
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
+                allowFontScaling={false}
                 defaultValue={
                   (this.state.userinfo.other &&
                     this.state.userinfo.other.school) ||
@@ -262,6 +268,7 @@ class QuestionAsk extends React.Component {
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
+                allowFontScaling={false}
                 placeholderTextColor="#CCC"
                 onChangeText={(moduleName) => this.setState({ moduleName })}
               />
@@ -273,12 +280,25 @@ class QuestionAsk extends React.Component {
               <TextInput
                 style={globalStyle.formInput}
                 placeholder="Please input ..."
+                allowFontScaling={false}
                 placeholderTextColor="#CCC"
                 onChangeText={(moduleCode) => this.setState({ moduleCode })}
               />
             </View>
+            <View style={globalStyle.formRow}>
+              <Text style={globalStyle.formText} allowFontScaling={false}>
+                User
+              </Text>
+              <TextInput
+                style={globalStyle.formInput}
+                placeholder="Please input ..."
+                allowFontScaling={false}
+                placeholderTextColor="#CCC"
+                value={this.state.userinfo._id}
+              />
+            </View>
           </View>
-          <View 
+          <View
             style={{
               ...styles.buttons,
               flexDirection: 'row',
@@ -286,7 +306,11 @@ class QuestionAsk extends React.Component {
               justifyContent: 'center',
             }}>
             <TouchableHighlight
-              style={{ ...styles.button, backgroundColor: '#3eb96e', width: 130 }}
+              style={{
+                ...styles.button,
+                backgroundColor: '#3eb96e',
+                width: 140,
+              }}
               onPress={() => this.setState({ modalVisible: true })}
               underlayColor="transparent">
               <Text allowFontScaling={false} style={styles.buttonText}>
@@ -294,7 +318,11 @@ class QuestionAsk extends React.Component {
               </Text>
             </TouchableHighlight>
             <TouchableHighlight
-              style={{ ...styles.button, backgroundColor: '#3eb96e', width: 130 }}
+              style={{
+                ...styles.button,
+                backgroundColor: '#3eb96e',
+                width: 140,
+              }}
               onPress={() => this.createQuestion()}
               underlayColor="transparent">
               <Text allowFontScaling={false} style={styles.buttonText}>

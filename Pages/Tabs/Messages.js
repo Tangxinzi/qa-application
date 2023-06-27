@@ -3,6 +3,7 @@ import globalStyle from '../../assets/global-style';
 import ViewSwiper from 'react-native-swiper';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Api from '../../components/Api';
+import None from '../../components/None';
 import { faker } from '@faker-js/faker';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -87,22 +88,6 @@ export default class Messages extends React.Component {
       .then((messages) => {
         this.setState({
           messages: [
-            // ...messages,
-            {
-              user: {
-                _avatar:
-                  'https://i.postimg.cc/HsQgM77P/WX20230426-214215-2x.png',
-                user_name: 'AI Helper',
-              },
-              room: {
-                _id: '',
-                modified_at: '2023-04-25',
-              },
-              chat: {
-                chat_content: 'Hope this can help you a lot.',
-              },
-              unread: 1,
-            },
             {
               user: {
                 _avatar: 'https://i.postimg.cc/NM30sqWy/2-4x.png',
@@ -191,6 +176,43 @@ export default class Messages extends React.Component {
           </View>
         </ScrollView>
         <View style={styles.messages}>
+          <TouchableHighlight
+            style={styles.row}
+            underlayColor="transparent"
+            onPress={() =>
+              this.props.navigation.navigate('AI Helper', {
+                room_id: this.state.userinfo._id,
+              })
+            }>
+            <>
+              <Image
+                resizeMode="cover"
+                style={styles.image}
+                source={{
+                  uri: 'https://i.postimg.cc/HsQgM77P/WX20230426-214215-2x.png',
+                }}
+              />
+              <View style={styles.rowContents}>
+                <View style={styles.rowContent}>
+                  <Text
+                    allowFontScaling={false}
+                    style={{ ...globalStyle.text, fontWeight: '600' }}>
+                    AI Helper
+                  </Text>
+                  <Text allowFontScaling={false} style={styles.text}></Text>
+                </View>
+                <View style={styles.rowContent}>
+                  <Text
+                    allowFontScaling={false}
+                    numberOfLines={1}
+                    style={{ width: '84%', color: 'grey' }}>
+                    Send a message
+                  </Text>
+                </View>
+              </View>
+            </>
+          </TouchableHighlight>
+          {!this.state.messages.length ? <None /> : <></>}
           {this.state.messages.map((item, key) => {
             return (
               <TouchableHighlight

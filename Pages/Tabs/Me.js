@@ -23,6 +23,7 @@ class Me extends React.Component {
 
     this.state = {
       userinfo: {
+        avatar: 'https://mart.ferer.net/web/statics/images/wx_avatar.png',
         other: {
           year: '',
           school: '',
@@ -34,41 +35,37 @@ class Me extends React.Component {
           text: 'Questions',
           name: 'Question List',
           icon: 'receipt-outline',
+          url: 'https://i.postimg.cc/hj6XjwXn/collect.png',
         },
         {
           text: 'Comments',
           name: 'Comment',
           icon: 'chatbubble-ellipses-outline',
+          url: 'https://i.postimg.cc/L5QZzXCc/comment.png',
         },
         {
-          text: 'Favorites',
+          text: 'Collect',
           name: 'Favorites',
           icon: 'star-outline',
+          url: 'https://i.postimg.cc/hPGCYQmH/note.png',
         },
         {
           text: 'Events',
           name: 'Event List',
           icon: 'browsers-outline',
+          url: 'https://i.postimg.cc/MXkv1QJv/post.png',
         },
         {
           text: 'Recent',
           name: 'Recent Views',
           icon: 'time-outline',
+          url: 'https://i.postimg.cc/XJGwQ9FV/like.png',
         },
         {
           text: 'Notes',
           name: 'Notes',
           icon: 'calendar-outline',
-        },
-        {
-          text: 'Topup',
-          name: 'Topup',
-          icon: 'help-circle-outline',
-        },
-        {
-          text: 'Withdraw',
-          name: 'Withdraw',
-          icon: 'help-circle-outline',
+          url: 'https://i.postimg.cc/dtdy7qRx/note.png',
         },
       ],
     };
@@ -83,15 +80,19 @@ class Me extends React.Component {
   }
 
   async getUserinfo() {
+    // set local storage
     var userinfo = await AsyncStorage.getItem('userinfo');
     userinfo = userinfo ? JSON.parse(userinfo) : {};
     this.setState({ userinfo });
+
+    // get user info
+    this.fetchUserinfo();
 
     this.props.navigation.setOptions({
       headerStyle: {
         borderBottomWidth: 0,
         backgroundColor: 'transparent',
-      }
+      },
     });
   }
 
@@ -103,9 +104,9 @@ class Me extends React.Component {
       },
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then((userinfo) => {
         this.setState({
-          userinfo: data,
+          userinfo,
         });
       })
       .catch((error) => {
@@ -117,12 +118,12 @@ class Me extends React.Component {
     return (
       <ScrollView style={styles.container}>
         <TouchableHighlight
-          style={styles.data}
+          style={{}}
           activeOpacity={0.85}
           underlayColor="transparent"
           onPress={() =>
             this.props.navigation.navigate(
-              this.state.userinfo ? 'Userinfo' : 'Login'
+              this.state.userinfo._id ? 'Userinfo' : 'Login'
             )
           }>
           <View style={styles.head}>
@@ -131,17 +132,21 @@ class Me extends React.Component {
               style={styles.teacherImage}
               source={{
                 uri:
-                  (this.state.userinfo && this.state.userinfo.avatar
+                  (this.state.userinfo.avatar
                     ? Api.uri + this.state.userinfo.avatar
                     : null) || Api.avatar,
               }}
             />
             <View style={styles.info}>
               <Text allowFontScaling={false} style={styles.username}>
-                {this.state.userinfo ? this.state.userinfo.user_name : 'Login'}
+                {this.state.userinfo._id
+                  ? this.state.userinfo.user_name
+                  : 'Login'}
               </Text>
               <Text allowFontScaling={false}>
-                {this.state.userinfo ? this.state.userinfo.user_identity : 'Not logged in yet'}
+                {this.state.userinfo._id
+                  ? this.state.userinfo.user_identity
+                  : 'Not logged in yet'}
               </Text>
             </View>
           </View>
@@ -152,56 +157,56 @@ class Me extends React.Component {
               <Text
                 allowFontScaling={false}
                 style={[styles.userinfoRow, { marginTop: 0 }]}>
-                <Text style={styles.key}>School:</Text>
-                <Text style={styles.value}>
-                  {(this.state.userinfo.other &&
+                <Text style={styles.key} allowFontScaling={false}>School:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
+                  {(this.state.userinfo._id &&
                     this.state.userinfo.other.school) ||
                     ''}
                 </Text>
               </Text>
               <Text allowFontScaling={false} style={styles.userinfoRow}>
-                <Text style={styles.key}>Year:</Text>
-                <Text style={styles.value}>
+                <Text style={styles.key} allowFontScaling={false}>Year:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
                   {(this.state.userinfo.other &&
                     this.state.userinfo.other.year) ||
                     ''}
                 </Text>
               </Text>
               <Text allowFontScaling={false} style={styles.userinfoRow}>
-                <Text style={styles.key}>Major:</Text>
-                <Text style={styles.value}>
+                <Text style={styles.key} allowFontScaling={false}>Major:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
                   {(this.state.userinfo.other &&
                     this.state.userinfo.other.major) ||
                     ''}
                 </Text>
               </Text>
               <Text allowFontScaling={false} style={styles.userinfoRow}>
-                <Text style={styles.key}>Country:</Text>
-                <Text style={styles.value}>
+                <Text style={styles.key} allowFontScaling={false}>Country:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
                   {(this.state.userinfo.other &&
                     this.state.userinfo.other.country) ||
                     ''}
                 </Text>
               </Text>
               <Text allowFontScaling={false} style={styles.userinfoRow}>
-                <Text style={styles.key}>Focus Area:</Text>
-                <Text style={styles.value}>
+                <Text style={styles.key} allowFontScaling={false}>Focus Area:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
                   {(this.state.userinfo.other &&
                     this.state.userinfo.other.area) ||
                     ''}
                 </Text>
               </Text>
               <Text allowFontScaling={false} style={styles.userinfoRow}>
-                <Text style={styles.key}>Position:</Text>
-                <Text style={styles.value}>
+                <Text style={styles.key} allowFontScaling={false}>Position:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
                   {(this.state.userinfo.other &&
                     this.state.userinfo.other.position) ||
                     ''}
                 </Text>
               </Text>
               <Text allowFontScaling={false} style={styles.userinfoRow}>
-                <Text style={styles.key}>Expected Salary:</Text>
-                <Text style={styles.value}>
+                <Text style={styles.key} allowFontScaling={false}>Expected Salary:</Text>
+                <Text style={styles.value} allowFontScaling={false}>
                   {(this.state.userinfo.other &&
                     this.state.userinfo.other.es) ||
                     ''}
@@ -222,26 +227,29 @@ class Me extends React.Component {
           </>
         ) : null}
         <View style={styles.userData}>
-          {true &&
-            this.state.tabs.map((item, key) => {
-              return (
-                <TouchableHighlight
-                  style={styles.data}
-                  activeOpacity={0.85}
-                  underlayColor="transparent"
-                  onPress={() => this.props.navigation.navigate(item.name)}>
-                  <>
-                    <Ionicons name={item.icon} size={20} />
-                    <Text allowFontScaling={false} style={styles.iconText}>
-                      {item.text || ''}
-                    </Text>
-                    <Ionicons name="chevron-forward-outline" size={20} />
-                  </>
-                </TouchableHighlight>
-              );
-            })}
+          {this.state.tabs.map((item, key) => {
+            return (
+              <TouchableHighlight
+                style={styles.data}
+                activeOpacity={0.85}
+                underlayColor="transparent"
+                onPress={() => this.props.navigation.navigate(item.name)}>
+                <>
+                  <Image
+                    resizeMode="contain"
+                    style={{ width: 40, height: 40 }}
+                    source={{
+                      uri: item.url,
+                    }}
+                  />
+                  <Text allowFontScaling={false} style={styles.iconText}>
+                    {item.text || ''}
+                  </Text>
+                </>
+              </TouchableHighlight>
+            );
+          })}
         </View>
-        <View style={styles.tabs}></View>
       </ScrollView>
     );
   }
@@ -290,9 +298,10 @@ const styles = {
     marginBottom: 10,
   },
   userinfo: {
-    backgroundColor: '#e6e6e6',
-    padding: 10,
-    borderRadius: 6,
+    marginTop: 10
+    // backgroundColor: '#e6e6e6',
+    // padding: 10,
+    // borderRadius: 6,
   },
   userinfoRow: {
     display: 'flex',
@@ -309,20 +318,30 @@ const styles = {
     display: 'flex',
   },
   value: {
+    marginLeft: 40,
+    color: 'grey',
     display: 'flex',
   },
   userData: {
-    marginTop: 20,
-    flexWrap: 'nowrap',
+    // padding: 10,
+    // display: 'flex',
+    // margin: 10,
+    marginTop: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'center',
   },
   data: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginBottom: 1,
-    flexDirection: 'row',
+    // marginLeft: 5,
+    // marginRight: 5,
+    // backgroundColor: '#CCC',
+    // padding: 15,
+    width: width / 5,
+    marginBottom: 20,
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     // backgroundColor: '#CCC',
   },
   dataNum: {
@@ -331,18 +350,9 @@ const styles = {
     marginBottom: 5,
   },
   iconText: {
-    flex: 1,
-    marginLeft: 10,
-  },
-
-  // tabs
-  tabs: {
-    flexDirection: 'row',
-  },
-  tabText: {
-    marginRight: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 2,
+    // flex: 1,
+    textAlign: 'center',
+    marginTop: 10,
   },
 };
 

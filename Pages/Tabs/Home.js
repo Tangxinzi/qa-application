@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import ViewSwiper from 'react-native-swiper';
 import moment from 'moment';
 moment.localeData('en');
@@ -184,6 +184,18 @@ export default class Home extends React.Component<Props, State> {
       });
   }
 
+  onChildrenData() {
+    this.setState({ status: false });
+  }
+
+  handleCancel = (e) => {
+    console.log('父组件的方法被子组件调用');
+  };
+
+  childClick = (e) => {
+    this.refs.childNodes.onShow();
+  };
+
   render() {
     return (
       <ScrollView style={styles.container}>
@@ -216,11 +228,18 @@ export default class Home extends React.Component<Props, State> {
           visible={this.state.status}
           onRequestClose={() => this.setState({ status: false })}>
           <ScrollView style={{ flex: 1, backgroundColor: '#FFF' }}>
-            <CameraView {...this.props} setStatus={this.setStatus.bind(this)} />
+            <CameraView
+              {...this.props}
+              onPress={() => {
+                this.setState({ status: false });
+              }}
+            />
             <TouchableHighlight
               underlayColor="transparent"
               style={{ position: 'absolute', left: 30, top: 50 }}
-              onPress={() => this.setState({ status: false })}>
+              onPress={() => {
+                this.setState({ status: false });
+              }}>
               <Ionicons name={'close-circle'} color="#FFF" size={30} />
             </TouchableHighlight>
           </ScrollView>
@@ -308,6 +327,7 @@ export default class Home extends React.Component<Props, State> {
           {this.state.questions.map((item, key) => {
             return (
               <TouchableHighlight
+                key={key}
                 underlayColor="transparent"
                 onPress={() =>
                   this.props.navigation.navigate('Question Content', {
@@ -359,14 +379,14 @@ export default class Home extends React.Component<Props, State> {
                   </View>
                   <View style={styles.questionFoot}>
                     {['ST1131', 'Statistic'].map((item, key) => {
-                        return (
-                          <Text
-                            style={styles.questionLabel}
-                            allowFontScaling={false}>
-                            {item}
-                          </Text>
-                        );
-                      })}
+                      return (
+                        <Text
+                          style={styles.questionLabel}
+                          allowFontScaling={false}>
+                          {item}
+                        </Text>
+                      );
+                    })}
                     <View style={{ flex: 1 }}></View>
                     <Text
                       style={{ ...styles.questionLabel, marginRight: 0 }}

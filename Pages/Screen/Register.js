@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Api from '../../components/Api';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -16,11 +18,25 @@ import {
   Platform,
   TextInput,
   RefreshControl,
+  Keyboard,
   KeyboardAvoidingView,
   ActivityIndicator,
   DeviceEventEmitter,
   TouchableHighlight,
 } from 'react-native';
+import Button from '../../components/Button';
+import TextInputContainer from '../../components/TextInputContainer';
+
+const validationSchema = Yup.object().shape({
+  email: Yup.string().email().required('email is required.'),
+  username: Yup.string().required('username is required.'),
+  password: Yup.string()
+    .label('password')
+    .min(6)
+    .max(12)
+    .required('password is required.')
+    .matches(/^\w+$/, 'Special characters present.'),
+});
 
 class Register extends React.Component {
   constructor(props) {
@@ -30,7 +46,7 @@ class Register extends React.Component {
       email: '',
       username: '',
       password: '',
-      user_identity: false
+      user_identity: false,
     };
   }
 
@@ -54,7 +70,6 @@ class Register extends React.Component {
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
         this.props.navigation.goBack();
       })
       .catch((error) => {
@@ -69,111 +84,104 @@ class Register extends React.Component {
           <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
           <View style={styles.login}>
             <KeyboardAvoidingView keyboardVerticalOffset={10}>
-              <View style={styles.textInputContainer}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ color: 'rgb(51, 51, 51)' }}>
-                  Email Address
-                </Text>
-                <TextInput
-                  allowFontScaling={false}
-                  style={styles.textInput}
-                  placeholder="For eg. name@example.com"
-                  clearButtonMode="while-editing"
-                  keyboardType="email-address"
-                  defaultValue={this.state.email}
-                  placeholderTextColor="#CCC"
-                  onChangeText={(email) => this.setState({ email })}
-                />
-              </View>
-              <View style={styles.textInputContainer}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ color: 'rgb(51, 51, 51)' }}>
-                  Username
-                </Text>
-                <TextInput
-                  allowFontScaling={false}
-                  style={styles.textInput}
-                  placeholder="For eg. name"
-                  clearButtonMode="while-editing"
-                  keyboardType="email-address"
-                  defaultValue={this.state.username}
-                  placeholderTextColor="#CCC"
-                  onChangeText={(username) => this.setState({ username })}
-                />
-              </View>
-              <View style={styles.textInputContainer}>
-                <Text
-                  allowFontScaling={false}
-                  style={{ color: 'rgb(51, 51, 51)' }}>
-                  Password
-                </Text>
-                <TextInput
-                  allowFontScaling={false}
-                  style={styles.textInput}
-                  placeholder=""
-                  clearButtonMode="while-editing"
-                  password={true}
-                  defaultValue={this.state.password}
-                  placeholderTextColor="#CCC"
-                  secureTextEntry
-                  onChangeText={(password) => this.setState({ password })}
-                />
-              </View>
-              <TouchableHighlight
-                underlayColor="transparent"
-                onPress={() =>
+              <Formik
+                onSubmit={(values) => {
+                  alert(JSON.stringify(values, null, 3));
                   this.setState({
-                    user_identity: !this.state.user_identity,
+                    email: values.email,
+                    username: values.username,
+                    password: values.password,
                   })
-                }>
-                <Text>
-                  <Ionicons
-                    name={
-                      this.state.user_identity
-                        ? 'checkmark-circle-outline'
-                        : 'ellipse-outline'
-                    }
-                    color="#666"
-                    size={20}
-                    style={{ position: 'relative', top: 2, marginRight: 5 }}
-                  />
-                  <Text style={{ color: '#666' }} allowFontScaling={false}>tutor identity</Text>
-                </Text>
-              </TouchableHighlight>
-              <View style={styles.textSubmitFoot}>
-                <TouchableHighlight
-                  underlayColor="transparent"
-                  style={{
-                    backgroundColor:
-                      this.state.email != '' && this.state.password != ''
-                        ? 'skyblue'
-                        : 'grey',
-                    width: 145,
-                    height: 46,
-                    justifyContent: 'center',
-                    borderRadius: 23,
-                  }}
-                  onPress={() => {
-                    if (this.state.email != '' && this.state.password != '') {
-                      this.fetchRegister();
-                    }
-                  }}>
-                  <Text
-                    allowFontScaling={false}
-                    numberOfLines={1}
-                    style={{
-                      fontSize: 16,
-                      fontWeight: '600',
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      textAlign: 'center',
-                      marginHorizontal: 16,
-                    }}>
-                    REGISTER
-                  </Text>
-                </TouchableHighlight>
-              </View>
+                  Keyboard.dismiss();
+                  this.fetchRegister();
+                }}
+                validationSchema={validationSchema}>
+                {({ handleChange, handleSubmit, values, errors }) => (
+                  <View>
+                    <TextInputContainer
+                      title={''}
+                      onChangeText={handleChange('username')}
+                      name="username"
+                      value={values.username}
+                      label="username"
+                      placeholder={'Please enter your Username'}
+                    />
+                    {errors.username ? (
+                      <Text style={{ color: 'red' }}>{errors.username}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <TextInputContainer
+                      title={''}
+                      onChangeText={handleChange('email')}
+                      name="email"
+                      value={values.email}
+                      label="email"
+                      placeholder={'Please enter your Email'}
+                      password={false}
+                      secureTextEntry={false}
+                    />
+                    {errors.email ? (
+                      <Text style={{ color: 'red' }}>{errors.email}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <TextInputContainer
+                      title={''}
+                      onChangeText={handleChange('password')}
+                      name="password"
+                      value={values.password}
+                      label="password"
+                      placeholder={'Please enter your Password'}
+                      password={true}
+                      secureTextEntry={true}
+                    />
+                    {errors.password ? (
+                      <Text style={{ color: 'red' }}>{errors.password}</Text>
+                    ) : (
+                      <></>
+                    )}
+                    <TouchableHighlight
+                      underlayColor="transparent"
+                      onPress={() =>
+                        this.setState({
+                          user_identity: !this.state.user_identity,
+                        })
+                      }>
+                      <Text>
+                        <Ionicons
+                          name={
+                            this.state.user_identity
+                              ? 'checkmark-circle-outline'
+                              : 'ellipse-outline'
+                          }
+                          color="#666"
+                          size={20}
+                          style={{
+                            position: 'relative',
+                            top: 2,
+                            marginRight: 5,
+                          }}
+                        />
+                        <Text
+                          style={{ color: '#666' }}
+                          allowFontScaling={false}>
+                          tutor identity
+                        </Text>
+                      </Text>
+                    </TouchableHighlight>
+                    <View style={styles.textSubmitFoot}>
+                      <Button text="Create Account" onPress={handleSubmit} />
+                      <TouchableHighlight
+                        underlayColor="transparent"
+                        style={{ marginTop: 20 }}
+                        onPress={() => this.props.navigation.navigate('Login')}>
+                        <Text>Go to Login.</Text>
+                      </TouchableHighlight>
+                    </View>
+                  </View>
+                )}
+              </Formik>
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -197,6 +205,7 @@ const styles = {
     backgroundColor: '#FFF',
     borderRadius: 10,
   },
+
   textInput: {
     width: '100%',
     borderColor: '#d3d6d9',
@@ -209,6 +218,8 @@ const styles = {
     textAlign: 'left',
   },
   textSubmitFoot: {
+    position: 'relative',
+    bottom: -230,
     marginTop: 30,
     marginBottom: 10,
     alignItems: 'center',
