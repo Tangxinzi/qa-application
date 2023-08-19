@@ -219,7 +219,7 @@ const styles = {
   },
   textSubmitFoot: {
     position: 'relative',
-    bottom: -230,
+    // bottom: -230,
     marginTop: 30,
     marginBottom: 10,
     alignItems: 'center',

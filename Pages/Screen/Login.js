@@ -66,7 +66,7 @@ export default class Login extends React.Component {
       .then((userinfo) => {
         // alert(userinfo);
         AsyncStorage.setItem('userinfo', JSON.stringify(userinfo));
-        this.props.navigation.navigate('Home');
+        this.props.navigation.popToTop('Home');
       })
       .catch((error) => {
         console.log(error);
@@ -177,7 +177,7 @@ const styles = {
   },
   textSubmitFoot: {
     position: 'relative',
-    bottom: -230,
+    // bottom: -230,
     marginTop: 30,
     marginBottom: 10,
     alignItems: 'center',

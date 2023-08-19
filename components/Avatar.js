@@ -45,7 +45,7 @@ export default class Avatar extends React.Component {
           }}
         />
         <Text allowFontScaling={false} style={{ fontSize: 16 }}>
-          {this.state.userinfo.user_name || 'Login'}
+          {this.state.userinfo.user_name || 'User'}
         </Text>
       </View>
     );

@@ -137,9 +137,11 @@ class Notes extends React.Component {
           options={this.state.tab}
           cancelButtonIndex={2}
           onPress={(index, value) => {
-            this.setState({
-              tabActive: this.state.tab[index]
-            })
+            if (index < 2) {
+              this.setState({
+                tabActive: this.state.tab[index],
+              });
+            }
           }}
         />
         <View
@@ -185,7 +187,7 @@ class Notes extends React.Component {
               />
             </View>
           </View>
-          
+
           <View style={styles.buttons}>
             <TouchableHighlight
               style={{ ...styles.button, backgroundColor: '#3eb96e' }}
@@ -232,7 +234,7 @@ class Notes extends React.Component {
               />
             </View>
           </View>
-          
+
           <View style={styles.buttons}>
             <TouchableHighlight
               style={{ ...styles.button, backgroundColor: '#3eb96e' }}
@@ -243,7 +245,8 @@ class Notes extends React.Component {
             </TouchableHighlight>
             <TouchableHighlight
               style={styles.button}
-              underlayColor="transparent">
+              underlayColor="transparent"
+              onPress={() => this.props.navigation.goBack()}>
               <Text allowFontScaling={false} style={styles.buttonText}>
                 Cancel
               </Text>
@@ -287,7 +290,7 @@ const styles = {
   buttons: {
     alignItems: 'center',
     position: 'relative',
-    bottom: -100
+    bottom: -100,
   },
   button: {
     margin: 10,

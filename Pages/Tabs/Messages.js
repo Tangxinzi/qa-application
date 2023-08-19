@@ -88,9 +88,10 @@ export default class Messages extends React.Component {
       .then((messages) => {
         this.setState({
           messages: [
+            ...messages,
             {
               user: {
-                _avatar: 'https://i.postimg.cc/NM30sqWy/2-4x.png',
+                avatar: 'https://i.postimg.cc/NM30sqWy/2-4x.png',
                 user_name: 'Amy Schneider',
               },
               room: {
@@ -104,7 +105,7 @@ export default class Messages extends React.Component {
             },
             {
               user: {
-                _avatar: 'https://i.postimg.cc/d0cnyLrn/3-4x.png',
+                avatar: 'https://i.postimg.cc/d0cnyLrn/3-4x.png',
                 user_name: 'Carlos Wilkins',
               },
               room: {
@@ -179,11 +180,16 @@ export default class Messages extends React.Component {
           <TouchableHighlight
             style={styles.row}
             underlayColor="transparent"
-            onPress={() =>
-              this.props.navigation.navigate('AI Helper', {
-                room_id: this.state.userinfo._id,
-              })
-            }>
+            onPress={() => {
+              if (!this.state.userinfo._id) {
+                this.props.navigation.navigate('Login');
+                return;
+              } else {
+                this.props.navigation.navigate('AI Helper', {
+                  room_id: this.state.userinfo._id,
+                });
+              }
+            }}>
             <>
               <Image
                 resizeMode="cover"
@@ -232,7 +238,7 @@ export default class Messages extends React.Component {
                       uri:
                         item.user && item.user.avatar
                           ? Api.uri + item.user.avatar
-                          : item.user._avatar || Api.avatar,
+                          : Api.avatar,
                     }}
                   />
                   <View style={styles.rowContents}>

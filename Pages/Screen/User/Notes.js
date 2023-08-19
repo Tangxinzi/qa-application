@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ViewSwiper from 'react-native-swiper';
+import { faker } from '@faker-js/faker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {
   Text,
@@ -21,13 +22,7 @@ class Notes extends React.Component {
       <ScrollView style={styles.container}>
         <View style={styles.tool}>
           <Text allowFontScaling={false} style={styles.toolText}>
-            分类
-          </Text>
-          <Text allowFontScaling={false} style={styles.toolText}>
-            分类
-          </Text>
-          <Text allowFontScaling={false} style={styles.toolText}>
-            分类
+            Normal
           </Text>
         </View>
         <View style={styles.contents}>
@@ -42,15 +37,15 @@ class Notes extends React.Component {
                       allowFontScaling={false}
                       style={styles.title}
                       numberOfLines={1}>
-                      标题
+                      {faker.lorem.sentence(5)}
                     </Text>
                     <Text allowFontScaling={false} numberOfLines={2}>
-                      内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
+                      {faker.lorem.text()}
                     </Text>
                   </View>
                   <View style={styles.contentFoot}>
                     <Text allowFontScaling={false} style={{ color: 'gray' }}>
-                      Date
+                      {faker.date.weekday()}
                     </Text>
                     <Ionicons
                       name="ellipsis-horizontal-circle-outline"
@@ -84,8 +79,8 @@ const styles = {
     flexDirection: 'row',
   },
   content: {
-    padding: 10,
-    margin: 10,
+    padding: 12,
+    margin: 12,
     marginTop: 0,
     borderRadius: 8,
     backgroundColor: '#FFF',

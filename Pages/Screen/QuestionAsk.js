@@ -182,7 +182,7 @@ class QuestionAsk extends React.Component {
             }}>
             <TouchableHighlight
               style={{ ...styles.button, backgroundColor: '#3eb96e' }}
-              onPress={() => this.createQuestion()}
+              onPress={() => this.props.navigation.navigate('Message')}
               underlayColor="transparent">
               <Text allowFontScaling={false} style={styles.buttonText}>
                 AI Helper

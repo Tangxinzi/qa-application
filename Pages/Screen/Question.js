@@ -139,6 +139,11 @@ class Question extends React.Component {
   }
 
   async createComment(comment_content) {
+    if (!this.state.userinfo._id) {
+      this.props.navigation.navigate('Login');
+      return;
+    }
+
     await fetch(Api.uri + '/api/v2/comment/create', {
       method: 'post',
       headers: {
@@ -162,6 +167,11 @@ class Question extends React.Component {
   }
 
   async onStar() {
+    if (!this.state.userinfo._id) {
+      this.props.navigation.navigate('Login');
+      return;
+    }
+
     await fetch(Api.uri + '/api/v2/question/star', {
       method: 'post',
       headers: {
@@ -184,6 +194,11 @@ class Question extends React.Component {
   }
 
   async onLike() {
+    if (!this.state.userinfo._id) {
+      this.props.navigation.navigate('Login');
+      return;
+    }
+
     await fetch(Api.uri + '/api/v2/question/like', {
       method: 'post',
       headers: {
@@ -206,6 +221,11 @@ class Question extends React.Component {
   }
 
   async onChat() {
+    if (!this.state.userinfo._id) {
+      this.props.navigation.navigate('Login');
+      return;
+    }
+    
     await fetch(Api.uri + '/api/v2/chat/create', {
       method: 'post',
       headers: {

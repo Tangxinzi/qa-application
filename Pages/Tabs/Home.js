@@ -116,6 +116,7 @@ export default class Home extends React.Component<Props, State> {
     });
   }
 
+  // 获取问题列表
   fetchData() {
     fetch(Api.uri + '/api/v2/question/lists')
       .then((response) => response.json())
@@ -127,6 +128,14 @@ export default class Home extends React.Component<Props, State> {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  // 去登录
+  toLogin() {
+    if (!this.state.userinfo._id) {
+      this.props.navigation.navigate('Login');
+      return;
+    }
   }
 
   fetchDays() {
@@ -144,7 +153,13 @@ export default class Home extends React.Component<Props, State> {
       });
   }
 
+  // 选择图片
   async pickImage() {
+    if (!this.state.userinfo._id) {
+      this.toLogin();
+      return;
+    }
+
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -164,7 +179,13 @@ export default class Home extends React.Component<Props, State> {
     });
   }
 
+  // 每日签到
   sign() {
+    if (!this.state.userinfo._id) {
+      this.toLogin();
+      return;
+    }
+
     fetch(Api.uri + '/api/v2/user/sign', {
       method: 'POST',
       headers: {
@@ -251,7 +272,13 @@ export default class Home extends React.Component<Props, State> {
           cancelButtonIndex={2}
           onPress={(index) => {
             index == 0 ? this.pickImage() : '';
-            index == 1 ? this.setState({ status: true }) : '';
+            if (index == 1) {
+              if (!this.state.userinfo._id) {
+                this.toLogin();
+                return;
+              }
+              this.setState({ status: true });
+            }
           }}
         />
         <View style={styles.calendar}>
